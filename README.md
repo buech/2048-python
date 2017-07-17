@@ -9,6 +9,9 @@ To start the game, run:
     
     $ python3 puzzle.py
 
+To run an example AI, run:
+
+    $ python3 2048-AI.py
 
 Contributors:
 ==
