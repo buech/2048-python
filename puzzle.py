@@ -27,7 +27,7 @@ KEY_LEFT = "'a'"
 KEY_RIGHT = "'d'"
 
 class GameGrid(Frame):
-    def __init__(self):
+    def __init__(self, is_ai_game=False):
         Frame.__init__(self)
 
         self.grid()
@@ -43,7 +43,8 @@ class GameGrid(Frame):
         self.init_matrix()
         self.update_grid_cells()
         
-        self.mainloop()
+        if not is_ai_game:
+            self.mainloop()
 
     def init_grid(self):
         background = Frame(self, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
@@ -95,10 +96,40 @@ class GameGrid(Frame):
                     self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
 
 
+
+    def ai_move (self, direction):
+        if direction==1:
+            self.matrix,done = self.commands[KEY_UP](self.matrix)
+        if direction==2:
+            self.matrix,done = self.commands[KEY_DOWN](self.matrix)
+        if direction==3:
+            self.matrix,done = self.commands[KEY_RIGHT](self.matrix)
+        if direction==4:
+            self.matrix,done = self.commands[KEY_LEFT](self.matrix)
+
+        if done:
+            self.matrix = add_two(self.matrix)
+            self.update_grid_cells()
+            # done=False
+            if game_state(self.matrix)=='win':
+                self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
+            if game_state(self.matrix)=='lose':
+                self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
+
+        return done
+    
+    def game_over(self):
+        if game_state(self.matrix)=='not over': return False
+        else: return True
+
+
     def generate_next(self):
         index = (self.gen(), self.gen())
         while self.matrix[index[0]][index[1]] != 0:
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
-gamegrid = GameGrid()
+if __name__ == '__main__':
+    gamegrid = GameGrid()
