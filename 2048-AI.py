@@ -11,9 +11,12 @@ SHOW_GUI = True
 gamegrid = puzzle.GameGrid(is_ai_game=True)
 
 while (True):
-    if SHOW_GUI: 
+    if SHOW_GUI:
         time.sleep(0.05)
-        print (gamegrid.matrix)
+
+        print "status: (Score = {})".format(gamegrid.calc_score())
+        for line in gamegrid.matrix:
+            print line
 
     # AI logic
     done = gamegrid.ai_move(RIGHT) 
@@ -29,6 +32,7 @@ while (True):
     if SHOW_GUI: 
         gamegrid.update()
     if gamegrid.game_over():
+        print "Final score: " + str(gamegrid.calc_score())
         break
 
 gamegrid.update()
