@@ -74,7 +74,7 @@ class GameGrid(Frame):
         return randint(0, GRID_LEN - 1)
 
     def init_matrix(self):
-        self.matrix = new_game(4)
+        self.matrix = new_game(GRID_LEN)
 
         self.matrix=add_two(self.matrix)
         self.matrix=add_two(self.matrix)

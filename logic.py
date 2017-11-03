@@ -55,11 +55,11 @@ def transpose(mat):
     return new
 
 def cover_up(mat):
-    new=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    new = new_game(len(mat))
     done=False
-    for i in range(4):
+    for i in range(len(mat)):
         count=0
-        for j in range(4):
+        for j in range(len(mat)):
             if mat[i][j]!=0:
                 new[i][count]=mat[i][j]
                 if j!=count:
@@ -69,8 +69,8 @@ def cover_up(mat):
 
 def merge(mat):
     done=False
-    for i in range(4):
-         for j in range(3):
+    for i in range(len(mat)):
+         for j in range(len(mat)-1):
              if mat[i][j]==mat[i][j+1] and mat[i][j]!=0:
                  mat[i][j]*=2
                  mat[i][j+1]=0
