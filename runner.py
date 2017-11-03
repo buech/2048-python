@@ -37,12 +37,14 @@ def main(argv):
     logging.debug("Initializing game")
     gamegrid = initializeGame()
 
+    logging.debug("loading algorithm")
     alg = importlib.import_module("algorithms."+args.algorithm)
 
+    logging.debug("starting loop")
     done = False
     Nmoves = 0
     while (not done):
-
+        logging.debug("Getting next move from algorithm")
         moves = alg.getNextMoves(gamegrid.matrix)
         if not type(moves) == list:
             moves = [moves]

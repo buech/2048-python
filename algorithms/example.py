@@ -1,11 +1,4 @@
-import puzzle
 import logic
-import time
-
-UP = 1
-DOWN= 2
-RIGHT = 3
-LEFT = 4
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
