@@ -79,6 +79,24 @@ def merge(mat):
                  done=True
     return (mat,done)
 
+def direction(game, direction):
+    if type(direction) == str:
+        if direction.lower() == "up":
+            direction = 1
+        elif direction.lower() == "down":
+            direction = 2
+        elif direction.lower() == "right":
+            direction = 3
+        elif direction.lower() == "left":
+            direction = 4
+    if direction==1:
+        return up(game)
+    elif direction==2:
+        return down(game)
+    elif direction==3:
+        return right(game)
+    elif direction==4:
+        return left(game)
 
 def up(game):
         # print("up")
