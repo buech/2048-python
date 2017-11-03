@@ -1,4 +1,9 @@
-from tkinter import *
+import sys
+isPython2 = sys.version_info[0] == 2
+if isPython2:
+    from Tkinter import *
+else:
+    from tkinter import *
 from logic import *
 from random import *
 
