@@ -32,8 +32,11 @@ KEY_LEFT = "'a'"
 KEY_RIGHT = "'d'"
 
 class GameGrid(Frame):
-    def __init__(self, is_ai_game=False):
+    def __init__(self, is_ai_game=False, useSeed = None):
         Frame.__init__(self)
+
+        if useSeed:
+            seed(useSeed)
 
         self.grid()
         self.master.title('2048')
