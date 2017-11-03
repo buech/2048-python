@@ -106,9 +106,16 @@ class GameGrid(Frame):
                     self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
 
-
-
     def ai_move (self, direction):
+        if type(direction) == str:
+            if direction.lower() == "up":
+                direction = 1
+            elif direction.lower() == "down":
+                direction = 2
+            elif direction.lower() == "right":
+                direction = 3
+            elif direction.lower() == "left":
+                direction = 4
         if direction==1:
             self.matrix,done = self.commands[KEY_UP](self.matrix)
         if direction==2:
