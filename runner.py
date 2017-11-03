@@ -44,14 +44,23 @@ def main(argv):
     logging.debug("starting loop")
     done = False
     Nmoves = 0
+    NnoMoves = 0
     while (not done):
         logging.debug("Getting next move from algorithm")
         moves = alg.getNextMoves(gamegrid.matrix)
         if not type(moves) == list:
             moves = [moves]
         for move in moves:
-            gamegrid.ai_move(move)
+            didMove = gamegrid.ai_move(move)
+            if not didMove:
+                NnoMoves += 1
+                if NnoMoves > 4:
+                    done = True
+                    break
+                continue
+            
             Nmoves += 1
+            NnoMoves = 0
 
             time.sleep(args.sleep)
 
