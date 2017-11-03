@@ -6,7 +6,6 @@ else:
     from tkinter import *
 from logic import *
 from random import *
-import math
 
 SIZE = 500
 GRID_LEN = 4
@@ -148,12 +147,7 @@ class GameGrid(Frame):
         8 -> 27
         ...
         """
-        total_score = 0
-        for i in range(len(self.matrix)):
-            for j in range(len(self.matrix[0])):
-                if self.matrix[i][j] > 0:
-                    total_score += 3 ** math.log(self.matrix[i][j], 2)
-        return int(total_score)
+        return score(self.matrix)
     
     def game_over(self):
         if game_state(self.matrix, self.endless_mode)=='not over': return False

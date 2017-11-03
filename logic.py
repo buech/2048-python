@@ -1,4 +1,5 @@
 from random import *
+import math
 
 def new_game(n):
     matrix = []
@@ -123,3 +124,18 @@ def right(game):
         game=cover_up(game)[0]
         game=reverse(game)
         return (game,done)
+
+def score(matrix):
+    """ calculated the score
+    Adds scores if each cell, where each cell has a score according to:
+    2 -> 3
+    4 -> 9
+    8 -> 27
+    ...
+    """
+    total_score = 0
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            if matrix[i][j] > 0:
+                total_score += 3 ** math.log(matrix[i][j], 2)
+    return int(total_score)
