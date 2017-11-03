@@ -19,7 +19,8 @@ def initializeGame(seed = None):
     return puzzle.GameGrid(is_ai_game=True, useSeed = seed)
 
 def main(argv):
-    parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' )
+    parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' ,
+                                      formatter_class = argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument( "-d", '--debug',       default = False, action='store_true', help = 'print in debug output' )
     parser.add_argument(       "--gui",         default = False, action="store_true", help = "shows graphical interface with current status")
     parser.add_argument(       "--ascii",       default = False, action="store_true", help = "prints current status to terminal")
