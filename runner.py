@@ -15,15 +15,16 @@ import tabulate
 
 import puzzle
 
-def initializeGame():
-    return puzzle.GameGrid(is_ai_game=True)
+def initializeGame(seed = None):
+    return puzzle.GameGrid(is_ai_game=True, useSeed = seed)
 
 def main(argv):
     parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' )
     parser.add_argument( "-d", '--debug',       default = False, action='store_true', help = 'print in debug output' )
     parser.add_argument(       "--gui",         default = False, action="store_true", help = "shows graphical interface with current status")
     parser.add_argument(       "--ascii",       default = False, action="store_true", help = "prints current status to terminal")
-    parser.add_argument( "-s", "--sleep",       default = 0,                          help = "time to wait between moves [s].")
+    parser.add_argument(       "--sleep",       default = 0,                          help = "time to wait between moves [s].")
+    parser.add_argument( "-s", "--seed",        default = None,                       help = "Set seed ot fixed value.")
     parser.add_argument( "-a", "--algorithm",   default = "example",                  help = "which algorithm to run")
     args = parser.parse_args(argv)
 
@@ -35,7 +36,7 @@ def main(argv):
         logging.info("Set log level to INFO")
 
     logging.debug("Initializing game")
-    gamegrid = initializeGame()
+    gamegrid = initializeGame(seed = args.seed)
 
     logging.debug("loading algorithm")
     alg = importlib.import_module("algorithms."+args.algorithm)
@@ -65,7 +66,7 @@ def main(argv):
                 done = True
                 break
 
-    print "Final score: {} after {} moves.".format(gamegrid.calc_score(), Nmoves)
+    print "GAME OVER. Final score: {} after {} moves.".format(gamegrid.calc_score(), Nmoves)
     if args.gui:
         raw_input("Press Enter to terminate.")
 
