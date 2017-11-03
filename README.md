@@ -7,11 +7,19 @@ Based on the popular game [2048](https://github.com/gabrielecirulli/2048) by Gab
 
 To start the game, run:
     
-    $ python3 puzzle.py
+    $ python puzzle.py
 
 To run an example AI, run:
 
-    $ python3 2048-AI.py
+    $ python runner.py
+
+To get more information about possible options, run:
+
+    $ python runner.py --help
+
+To create a new algorithm, create python file in subdirectory "algorithms" and implement function getNextMoves(matrix). To execute algorithms/MyFancyAlgorithm.py run:
+
+    $ python runner.py -a MyFancyAlgorithm
 
 Contributors:
 ==
