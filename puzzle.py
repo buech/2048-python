@@ -16,10 +16,10 @@ BACKGROUND_COLOR_GAME = "#92877d"
 BACKGROUND_COLOR_CELL_EMPTY = "#9e948a"
 BACKGROUND_COLOR_DICT = {   2:"#eee4da", 4:"#ede0c8", 8:"#f2b179", 16:"#f59563", \
                             32:"#f67c5f", 64:"#f65e3b", 128:"#edcf72", 256:"#edcc61", \
-                            512:"#edc850", 1024:"#edc53f", 2048:"#edc22e" }
+                            512:"#edc850", 1024:"#edc53f", 2048:"#edc22e" , 4096:"#edc22e", 8192:"#edc22e", 16384:"#edc22e", 32768:"#edc22e", 65536:"#edc22e"}
 CELL_COLOR_DICT = { 2:"#776e65", 4:"#776e65", 8:"#f9f6f2", 16:"#f9f6f2", \
                     32:"#f9f6f2", 64:"#f9f6f2", 128:"#f9f6f2", 256:"#f9f6f2", \
-                    512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" }
+                    512:"#f9f6f2", 1024:"#f9f6f2", 2048:"#f9f6f2" , 4096:"#f9f6f2", 8192:"#f9f6f2", 16384:"#f9f6f2", 32768:"#f9f6f2", 65536:"#f9f6f2"}
 FONT = ("Verdana", 40, "bold")
 
 KEY_UP_ALT = "\'\\uf700\'"
@@ -51,6 +51,8 @@ class GameGrid(Frame):
         self.init_grid()
         self.init_matrix()
         self.update_grid_cells()
+
+        self.endless_mode = is_ai_game # there is no "win" in AI mode
         
         if not is_ai_game:
             self.mainloop()
@@ -97,10 +99,10 @@ class GameGrid(Frame):
                 self.matrix = add_two(self.matrix)
                 self.update_grid_cells()
                 done=False
-                if game_state(self.matrix)=='win':
+                if game_state(self.matrix, self.endless_mode) == 'win':
                     self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
-                if game_state(self.matrix)=='lose':
+                if game_state(self.matrix, self.endless_mode) == 'lose':
                     self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
 
@@ -120,10 +122,10 @@ class GameGrid(Frame):
             self.matrix = add_two(self.matrix)
             self.update_grid_cells()
             # done=False
-            if game_state(self.matrix)=='win':
+            if game_state(self.matrix, self.endless_mode)=='win':
                 self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                 self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
-            if game_state(self.matrix)=='lose':
+            if game_state(self.matrix, self.endless_mode)=='lose':
                 self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                 self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
 
@@ -145,7 +147,7 @@ class GameGrid(Frame):
         return int(total_score)
     
     def game_over(self):
-        if game_state(self.matrix)=='not over': return False
+        if game_state(self.matrix, self.endless_mode)=='not over': return False
         else: return True
 
 
