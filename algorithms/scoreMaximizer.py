@@ -1,13 +1,16 @@
 import logic
 import random
 
+"""
+This algorithm tests which direction results in the highest score. If multiple directions have same score, they are ordered by priority.
+"""
+
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
 
     return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
     """
 
-    #  if possible move to right bottom corner
     max_score = logic.score(matrix)
     same_score = []
     for i in ["right","down","left","up"]:
@@ -19,5 +22,6 @@ def getNextMoves(matrix):
             same_score = []
         if this_score == max_score:
             same_score.append(i)
+
     # pick one of possible directions with highest scored according to priorities
     return same_score[0]

@@ -1,5 +1,9 @@
 import logic
 
+"""
+Simple example algorithm, that tries to gather cells in bottom right corner.
+"""
+
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
 

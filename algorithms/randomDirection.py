@@ -1,6 +1,9 @@
-
 import logic
 import random
+
+"""
+Naive algorithm that uses any random direction.
+"""
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
