@@ -11,6 +11,7 @@ import argparse
 import importlib
 import pprint
 import time
+import tabulate
 
 import puzzle
 
@@ -54,11 +55,10 @@ def main(argv):
             # update game grid
             if args.gui: 
                 gamegrid.update()
-                
             if args.ascii:
                 print "status: (Score = {})".format(gamegrid.calc_score())
-                for line in gamegrid.matrix:
-                    print line
+                print tabulate.tabulate(gamegrid.matrix, tablefmt="grid")
+
             if gamegrid.game_over():
                 done = True
                 break
