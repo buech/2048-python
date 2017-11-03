@@ -118,12 +118,14 @@ class GameGrid(Frame):
                 direction = 4
         if direction==1:
             self.matrix,done = self.commands[KEY_UP](self.matrix)
-        if direction==2:
+        elif direction==2:
             self.matrix,done = self.commands[KEY_DOWN](self.matrix)
-        if direction==3:
+        elif direction==3:
             self.matrix,done = self.commands[KEY_RIGHT](self.matrix)
-        if direction==4:
+        elif direction==4:
             self.matrix,done = self.commands[KEY_LEFT](self.matrix)
+        else:
+            done = False
 
         if done:
             self.matrix = add_two(self.matrix)
