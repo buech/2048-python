@@ -15,8 +15,8 @@ import tabulate
 
 import puzzle
 
-def initializeGame(seed = None):
-    return puzzle.GameGrid(is_ai_game=True, useSeed = seed)
+def initializeGame(seed = None, showGUI = True):
+    return puzzle.GameGrid(is_ai_game=True, useSeed = seed, showGUI = showGUI)
 
 def printSummary(results):
     order = results.keys()
@@ -52,7 +52,8 @@ def main(argv):
     for algorithm in args.algorithm.split(","):
 
         logging.debug("Initializing game")
-        gamegrid = initializeGame(seed = args.seed)
+        gamegrid = initializeGame(seed = args.seed, showGUI = args.gui)
+
         logging.debug("loading algorithm " + algorithm)
         alg = importlib.import_module("algorithms."+algorithm)
 

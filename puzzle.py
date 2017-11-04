@@ -32,24 +32,29 @@ KEY_LEFT = "'a'"
 KEY_RIGHT = "'d'"
 
 class GameGrid(Frame):
-    def __init__(self, is_ai_game=False, useSeed = None):
-        Frame.__init__(self)
+    def __init__(self, is_ai_game=False, useSeed = None, showGUI = True):
+        self.GUImode = showGUI
+        if self.GUImode:
+            Frame.__init__(self)
 
         if useSeed:
             seed(useSeed)
 
-        self.grid()
-        self.master.title('2048')
-        self.master.bind("<Key>", self.key_down)
+        if self.GUImode:
+            self.grid()
+            self.master.title('2048')
+            self.master.bind("<Key>", self.key_down)
 
         #self.gamelogic = gamelogic
         self.commands = {   KEY_UP: up, KEY_DOWN: down, KEY_LEFT: left, KEY_RIGHT: right,
                             KEY_UP_ALT: up, KEY_DOWN_ALT: down, KEY_LEFT_ALT: left, KEY_RIGHT_ALT: right }
 
         self.grid_cells = []
-        self.init_grid()
+        if self.GUImode:
+            self.init_grid()
         self.init_matrix()
-        self.update_grid_cells()
+        if self.GUImode:
+            self.update_grid_cells()
 
         self.endless_mode = is_ai_game # there is no "win" in AI mode
         
@@ -128,14 +133,17 @@ class GameGrid(Frame):
 
         if done:
             self.matrix = add_two(self.matrix)
-            self.update_grid_cells()
+            if self.GUImode:
+                self.update_grid_cells()
             # done=False
             if game_state(self.matrix, self.endless_mode)=='win':
-                self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
-                self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                if self.GUImode:
+                    self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                    self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
             if game_state(self.matrix, self.endless_mode)=='lose':
-                self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
-                self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                if self.GUImode:
+                    self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                    self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
 
         return done
 
