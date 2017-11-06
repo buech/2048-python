@@ -19,7 +19,7 @@ def initializeGame(seed = None, showGUI = True):
     return puzzle.GameGrid(is_ai_game=True, useSeed = seed, showGUI = showGUI)
 
 def printSummary(results):
-    order = results.keys()
+    order = list(results.keys())
     order.sort(key = lambda x: results[x]["Nmoves"], reverse=True)
     order.sort(key = lambda x: results[x]["score"],  reverse=True)
     header = ["Algorithm name", "Score", "moves"]
@@ -27,7 +27,7 @@ def printSummary(results):
     for alg in order:
         res = results[alg]
         lines.append([alg, res["score"], res["Nmoves"]])
-    print tabulate.tabulate(lines, header, tablefmt="grid")
+    print(tabulate.tabulate(lines, header, tablefmt="grid"))
 
 def main(argv):
     parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' ,
@@ -84,8 +84,8 @@ def main(argv):
                 if args.gui: 
                     gamegrid.update()
                 if args.ascii:
-                    print "status: (Score = {})".format(gamegrid.calc_score())
-                    print tabulate.tabulate(gamegrid.matrix, tablefmt="grid")
+                    print( "status: (Score = {})".format(gamegrid.calc_score()))
+                    print( tabulate.tabulate(gamegrid.matrix, tablefmt="grid"))
 
                 if gamegrid.game_over():
                     done = True
@@ -93,7 +93,7 @@ def main(argv):
 
         score = gamegrid.calc_score()
         results[algorithm] = {"score": score, "Nmoves": Nmoves}
-        print "GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm)
+        print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
             raw_input("Press Enter to terminate.")
 
