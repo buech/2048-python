@@ -17,7 +17,7 @@ def move_row(row):
             out[oc] = out[ic]
         ic += 1
         oc += 1
-    out[oc:]=[None]*(4-oc)
+    out[oc:]=[0]*(4-oc)
     return out
 
 def move(grid, rot):
@@ -48,7 +48,7 @@ def eval_smoothness(grid):
     return -sum( min([1e8]+[abs((grid[x][y] or 2) - (grid[x+a][y+b] or 2)) for a, b in((-1,0),(0,-1),(1,0),(0,1)) if 0 <= x+a <4 and 0<=y+b<4]) for x in range4 for y in range4)
 
 def count_free(grid):
-    return sum(r.count(None) for r in grid)
+    return sum(r.count(0) for r in grid)
 
 def EVAL(grid):
   return eval_monotone_LR(grid) + eval_monotone_LR(rotateRight(grid))+ eval_smoothness(grid) \
@@ -69,7 +69,7 @@ def search_min(grid):
                   row[j] = v
                   score += p * search_max(grid)
                   all_p += p
-          row[j] = None
+          row[j] = 0
 
           scores.append(score / all_p)
 

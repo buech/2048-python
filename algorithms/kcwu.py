@@ -19,14 +19,14 @@ range4 = range(4)
 range3 = range(3)
 
 to_idx = dict((2**i, i) for i in range(16))
-to_idx[None] = 0
+to_idx[0] = 0
 
 def move_row(row):
-    out = [None, None, None, None]
+    out = [0, 0, 0, 0]
     oc = 0
     ic = 0
     while ic < 4:
-        if row[ic] is None:
+        if row[ic] is 0:
             ic += 1
             continue
         out[oc] = row[ic]
@@ -36,7 +36,7 @@ def move_row(row):
     ic = 0
     oc = 0
     while ic < 4:
-        if out[ic] is None:
+        if out[ic] is 0:
             break
         if ic == 3:
             out[oc] = out[ic]
@@ -50,7 +50,7 @@ def move_row(row):
         ic += 1
         oc += 1
     while oc < 4:
-        out[oc] = None
+        out[oc] = 0
         oc += 1
     return out
 
@@ -97,7 +97,7 @@ class AI(object):
     def build_move_table(self):
         # assume max cell is 32768
         max_cell = 2**15
-        values = [None] + [2**x for x in range(1, 16)]
+        values = [0] + [2**x for x in range(1, 16)]
         assert len(values) == 16
         idx = 0
         for a in values:
@@ -319,7 +319,7 @@ class AI(object):
 
 
     def eval_free(self, grid):
-        free = grid[0].count(None) + grid[1].count(None) + grid[2].count(None) + grid[3].count(None)
+        free = grid[0].count(0) + grid[1].count(0) + grid[2].count(0) + grid[3].count(0)
         return -(16-free)**2
 
     def eval(self, grid):
@@ -364,12 +364,12 @@ class AI(object):
       if key in self.table:
         return self.table[key]
 
-      blank_count = grid[0].count(None) + grid[1].count(None) + grid[2].count(None) + grid[3].count(None)
+      blank_count = grid[0].count(0) + grid[1].count(0) + grid[2].count(0) + grid[3].count(0)
 
       scores = []
       for i in range4:
         for j in range4:
-          if grid[i][j] is not None:
+          if grid[i][j] is not 0:
             continue
 
           tmp = list(grid[i])
@@ -382,7 +382,7 @@ class AI(object):
               grid[i] = tuple(tmp)
               score += p * self.search_max(grid, depth, p*nodep)
               all_p += p
-          tmp[j] = None
+          tmp[j] = 0
           grid[i] = tuple(tmp)
 
           if all_p == 0:
