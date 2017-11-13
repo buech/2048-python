@@ -7,7 +7,7 @@ The minimax algorithm.
 """
 
 directions = [1,2,3,4]
-INF = 1000000000
+INF = 1e8
 
 def generateValidMoves(grid):
     validMoves = []
@@ -60,8 +60,19 @@ def search_min(grid, depth):
 
     return minScore
 
+def countFreeTiles(grid):
+    return sum(r.count(0) for r in grid)
+
+def smoothness(grid):
+    ax0 = np.diff(grid, axis=0)
+    ax1 = np.diff(grid, axis=1)
+    return 0.5 * (np.sum(abs(ax0)) + np.sum(abs(ax1)))
+
+#def evaluate(grid):
+#    return logic.score(grid)
+
 def evaluate(grid):
-    return logic.score(grid)
+    return np.log10(logic.score(grid)) - smoothness(grid) - (16 - countFreeTiles(grid))**2
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
@@ -84,6 +95,6 @@ def getNextMoves(matrix):
             maxScore = score
             best_move = move
 
-    print score, best_move
+    #print score, best_move
 
     return best_move
