@@ -44,9 +44,11 @@ def search_max(grid, depth):
     return maxScore
 
 def search_min(grid, depth):
-    validMoves = generateValidMoves(grid)
+    if depth == 0:
+        return evaluate(grid)
 
-    if (depth == 0) or (len(validMoves) == 0):
+    validMoves = generateValidMoves(grid)
+    if len(validMoves) == 0:
         return evaluate(grid)
 
     minScore = INF
