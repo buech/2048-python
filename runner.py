@@ -12,6 +12,7 @@ import importlib
 import pprint
 import time
 import tabulate
+import numpy as np
 
 import puzzle
 
@@ -21,12 +22,13 @@ def initializeGame(seed = None, showGUI = True):
 def printSummary(results):
     order = list(results.keys())
     order.sort(key = lambda x: results[x]["Nmoves"], reverse=True)
+    order.sort(key = lambda x: results[x]["maxTile"],  reverse=True)
     order.sort(key = lambda x: results[x]["score"],  reverse=True)
-    header = ["Algorithm name", "Score", "moves"]
+    header = ["Algorithm name", "Score", "max. Tile", "moves"]
     lines = []
     for alg in order:
         res = results[alg]
-        lines.append([alg, res["score"], res["Nmoves"]])
+        lines.append([alg, res["score"], res["maxTile"], res["Nmoves"]])
     print(tabulate.tabulate(lines, header, tablefmt="grid"))
 
 def main(argv):
@@ -92,8 +94,9 @@ def main(argv):
                     break
 
         score = gamegrid.calc_score()
-        results[algorithm] = {"score": score, "Nmoves": Nmoves}
-        print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
+        maxTile = np.max(gamegrid.matrix)
+        results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves}
+        #print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
             raw_input("Press Enter to terminate.")
 
