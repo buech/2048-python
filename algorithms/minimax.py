@@ -28,18 +28,18 @@ def search_max(grid, depth):
     if depth == 0:
         return evaluate(grid)
 
-    i = 0
+    #i = 0
     for move in directions:
         new_grid, moved = logic.direction(grid, move)
         if not moved:
-            i += 1
+            #i += 1
             continue
         score = search_min(grid, depth-1)
         if score > maxScore:
             maxScore = score
 
-    if i > 3:
-        return evaluate(grid)
+    #if i > 3:
+    #    return evaluate(grid)
 
     return maxScore
 
