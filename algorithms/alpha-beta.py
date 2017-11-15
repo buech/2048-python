@@ -17,8 +17,8 @@ def addTile(grid, i, j, num):
     grid[i][j] = num
     return grid
 
-def search_max(grid, depth):
-    maxScore = -INF
+def search_max(grid, depth, alpha, beta):
+    maxScore = alpha
 
     if depth == 0:
         return evaluate(grid)
@@ -29,16 +29,18 @@ def search_max(grid, depth):
         if not moved:
             #i += 1
             continue
-        score = search_min(grid, depth-1)
+        score = search_min(grid, depth-1, maxScore, beta)
         if score > maxScore:
             maxScore = score
+            if maxScore >= beta:
+                break
 
     #if i > 3:
     #    return evaluate(grid)
 
     return maxScore
 
-def search_min(grid, depth):
+def search_min(grid, depth, alpha, beta):
     if depth == 0:
         return evaluate(grid)
 
@@ -46,14 +48,16 @@ def search_min(grid, depth):
     if len(validMoves[0]) == 0:
         return evaluate(grid)
 
-    minScore = INF
+    minScore = beta
 
     for i,j in zip(*validMoves):
         for num in [2,4]:
             new_grid = addTile(grid, i, j, num)
-            score = search_max(new_grid, depth-1)
+            score = search_max(new_grid, depth-1, alpha, minScore)
             if score < minScore:
                 minScore = score
+                if minScore <= alpha:
+                    break
 
     return minScore
 
@@ -88,7 +92,7 @@ def getNextMoves(matrix):
         if not moved:
             continue
 
-        score = search_min(grid, maxDepth)
+        score = search_min(grid, maxDepth, maxScore, INF)
 
         if score > maxScore:
             maxScore = score
