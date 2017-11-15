@@ -100,6 +100,6 @@ def getNextMoves(matrix):
 
     #print score, best_move
     stop = time.time()
-    #print("time: ", stop-start)
+    print("alpha-beta time: ", "%.4fs"%(stop-start))
 
     return best_move
