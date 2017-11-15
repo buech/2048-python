@@ -1,6 +1,7 @@
 import logic
 import numpy as np
 import random
+import time
 
 """
 The minimax algorithm.
@@ -86,6 +87,7 @@ def getNextMoves(matrix):
     maxScore = -INF - 1
     best_move = random.choice(directions)
 
+    start = time.time()
     for move in directions:
         grid, moved = logic.direction(matrix, move)
         if not moved:
@@ -98,5 +100,7 @@ def getNextMoves(matrix):
             best_move = move
 
     #print score, best_move
+    stop = time.time()
+    #print("time: ", stop-start)
 
     return best_move
