@@ -11,13 +11,7 @@ directions = [1,2,3,4]
 INF = 1e8
 
 def generateValidMoves(grid):
-    validMoves = []
-    for i in range(4):
-        for j in range(4):
-            if grid[i][j] == 0:
-                validMoves.append([i,j])
-
-    return validMoves
+    return np.where(np.array(grid) == 0)
 
 def addTile(grid, i, j, num):
     grid[i][j] = num
@@ -49,12 +43,12 @@ def search_min(grid, depth):
         return evaluate(grid)
 
     validMoves = generateValidMoves(grid)
-    if len(validMoves) == 0:
+    if len(validMoves[0]) == 0:
         return evaluate(grid)
 
     minScore = INF
 
-    for i,j in validMoves:
+    for i,j in zip(*validMoves):
         for num in [2,4]:
             new_grid = addTile(grid, i, j, num)
             score = search_max(new_grid, depth-1)
