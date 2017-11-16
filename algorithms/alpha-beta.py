@@ -82,7 +82,7 @@ def getNextMoves(matrix):
     return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
     """
 
-    maxDepth = 3
+    maxDepth = 2
     maxScore = -INF - 1
     best_move = random.choice(directions)
 
