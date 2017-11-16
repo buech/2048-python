@@ -29,7 +29,7 @@ def printSummary(results):
     for alg in order:
         res = results[alg]
         lines.append([alg, res["score"], res["maxTile"], res["Nmoves"], res["total_time"], res["tpm"]])
-    print(tabulate.tabulate(lines, header, tablefmt="grid"))
+    print(tabulate.tabulate(lines, header, tablefmt="simple"))
 
 def main(argv):
     parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' ,
