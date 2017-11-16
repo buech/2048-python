@@ -68,7 +68,7 @@ def getNextMoves(matrix):
     maxScore = -INF
     best_move = random.choice(directions)
 
-    start = time.time()
+    #start = time.time()
     for move in directions:
         grid, moved = logic.direction(matrix, move)
         if not moved:
@@ -81,7 +81,7 @@ def getNextMoves(matrix):
             best_move = move
 
     #print score, best_move
-    stop = time.time()
+    #stop = time.time()
     #print("minimax time: ", "%.4fs"%(stop-start))
 
     return best_move
