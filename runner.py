@@ -24,11 +24,11 @@ def printSummary(results):
     order.sort(key = lambda x: results[x]["Nmoves"], reverse=True)
     order.sort(key = lambda x: results[x]["maxTile"],  reverse=True)
     order.sort(key = lambda x: results[x]["score"],  reverse=True)
-    header = ["Algorithm name", "Score", "max. Tile", "moves"]
+    header = ["Algorithm name", "Score", "max. Tile", "moves", "tot. T", "TPM"]
     lines = []
     for alg in order:
         res = results[alg]
-        lines.append([alg, res["score"], res["maxTile"], res["Nmoves"]])
+        lines.append([alg, res["score"], res["maxTile"], res["Nmoves"], res["total_time"], res["tpm"]])
     print(tabulate.tabulate(lines, header, tablefmt="grid"))
 
 def main(argv):
@@ -51,6 +51,7 @@ def main(argv):
 
     results = {}
 
+    total_time = 0
     for algorithm in args.algorithm.split(","):
 
         logging.debug("Initializing game")
@@ -60,14 +61,19 @@ def main(argv):
         alg = importlib.import_module("algorithms."+algorithm)
 
         logging.debug("starting loop")
+        total_start = time.time()
+        time_per_move = 0
         done = False
         Nmoves = 0
         NnoMoves = 0
         while (not done):
             logging.debug("Getting next move from algorithm")
+            move_start = time.time()
             moves = alg.getNextMoves(gamegrid.matrix)
+            move_stop = time.time()
             if not type(moves) == list:
                 moves = [moves]
+            time_per_move += (move_stop - move_start) / len(moves)
             for move in moves:
                 didMove = gamegrid.ai_move(move)
                 if not didMove:
@@ -76,14 +82,14 @@ def main(argv):
                         done = True
                         break
                     continue
-                
+
                 Nmoves += 1
                 NnoMoves = 0
 
                 time.sleep(args.sleep)
 
                 # update game grid
-                if args.gui: 
+                if args.gui:
                     gamegrid.update()
                 if args.ascii:
                     print( "status: (Score = {})".format(gamegrid.calc_score()))
@@ -93,9 +99,12 @@ def main(argv):
                     done = True
                     break
 
+        total_stop = time.time()
+        total_time = total_stop - total_start
+        avg_time = time_per_move / Nmoves
         score = gamegrid.calc_score()
         maxTile = np.max(gamegrid.matrix)
-        results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves}
+        results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves, "tpm": avg_time, "total_time": total_time}
         #print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
             raw_input("Press Enter to terminate.")

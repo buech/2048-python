@@ -96,6 +96,6 @@ def getNextMoves(matrix):
 
     #print score, best_move
     stop = time.time()
-    print("minimax time: ", "%.4fs"%(stop-start))
+    #print("minimax time: ", "%.4fs"%(stop-start))
 
     return best_move
