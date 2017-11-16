@@ -83,7 +83,7 @@ def getNextMoves(matrix):
     """
 
     maxDepth = 2
-    maxScore = -INF - 1
+    maxScore = -INF
     best_move = random.choice(directions)
 
     start = time.time()
