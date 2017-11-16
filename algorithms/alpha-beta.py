@@ -2,6 +2,7 @@ import logic
 import numpy as np
 import random
 import time
+from evaluate import evaluate
 
 """
 The minimax algorithm.
@@ -60,21 +61,6 @@ def search_min(grid, depth, alpha, beta):
                     break
 
     return minScore
-
-def countFreeTiles(grid):
-    return sum(r.count(0) for r in grid)
-
-def smoothness(grid):
-    #grid2 = np.log2(np.array(grid) + 2
-    ax0 = np.diff(grid, axis=0)
-    ax1 = np.diff(grid, axis=1)
-    return 0.5 * (np.sum(abs(ax0)) + np.sum(abs(ax1)))
-
-#def evaluate(grid):
-#    return logic.score(grid)
-
-def evaluate(grid):
-    return -smoothness(grid) - (16 - countFreeTiles(grid))**2 #+ np.log2(np.max(grid))
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
