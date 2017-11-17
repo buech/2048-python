@@ -30,7 +30,7 @@ def search_max(grid, depth):
         if not moved:
             #i += 1
             continue
-        score = search_min(grid, depth-1)
+        score = search_min(new_grid, depth-1)
         if score > maxScore:
             maxScore = score
 
