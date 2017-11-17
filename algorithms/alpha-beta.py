@@ -21,23 +21,15 @@ def addTile(grid, i, j, num):
 def search_max(grid, depth, alpha, beta):
     maxScore = alpha
 
-    if depth == 0:
-        return evaluate(grid)
-
-    #i = 0
     for move in directions:
         new_grid, moved = logic.direction(grid, move)
         if not moved:
-            #i += 1
             continue
         score = search_min(new_grid, depth-1, maxScore, beta)
         if score > maxScore:
             maxScore = score
             if maxScore >= beta:
                 break
-
-    #if i > 3:
-    #    return evaluate(grid)
 
     return maxScore
 
