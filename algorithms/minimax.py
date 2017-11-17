@@ -52,7 +52,7 @@ def search_min(grid, depth):
     for i,j in zip(*validMoves):
         for num in [2,4]:
             new_grid = addTile(grid, i, j, num)
-            score = search_max(new_grid, depth-1)
+            score = search_max(new_grid, depth)
             if score < minScore:
                 minScore = score
 
