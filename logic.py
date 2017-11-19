@@ -41,20 +41,10 @@ def game_state(mat, endless_mode = False):
     return 'lose'
 
 def reverse(mat):
-    new=[]
-    for i in range(len(mat)):
-        new.append([])
-        for j in range(len(mat[0])):
-            new[i].append(mat[i][len(mat[0])-j-1])
-    return new
+    return [row[::-1] for row in mat]
 
 def transpose(mat):
-    new=[]
-    for i in range(len(mat[0])):
-        new.append([])
-        for j in range(len(mat)):
-            new[i].append(mat[j][i])
-    return new
+    return map(list, zip(*mat))
 
 def cover_up(mat):
     new = new_game(len(mat))
