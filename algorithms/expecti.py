@@ -36,19 +36,20 @@ def search_min(grid, depth):
         return evaluate(grid)
 
     validMoves = generateValidMoves(grid)
-    if len(validMoves[0]) == 0:
+    nFreeTiles = len(validMoves[0])
+    if nFreeTiles == 0:
         return evaluate(grid)
 
-    minScore = INF
+    score = 0
 
     for i,j in zip(*validMoves):
-        for num in [2,4]:
-            new_grid = addTile(grid, i, j, num)
-            score = search_max(new_grid, depth)
-            if score < minScore:
-                minScore = score
+        for num, p in ((2, 0.9/nFreeTiles), (4, 0.1/nFreeTiles)):
+            if p > 0.1:
+                new_grid = addTile(grid, i, j, num)
+                score += p * search_max(new_grid, depth)
 
-    return minScore
+    return score
+
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
