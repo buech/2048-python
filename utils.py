@@ -32,6 +32,18 @@ def merge_up(grid):
 def merge_down(grid):
     return merge_up(grid[::-1])[::-1]
 
+def direction(grid, move):
+    if move == 1:
+        result = merge_up(grid)
+    elif move == 2:
+        result = merge_down(grid)
+    elif move == 3:
+        result = merge_right(grid)
+    elif move == 4:
+        result = merge_left(grid)
+
+    return list(map(list, result)), result != grid
+
 if __name__=='__main__':
 
     grid = (( 0, 0, 2, 2)
