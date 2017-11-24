@@ -1,4 +1,5 @@
-import logic
+#import logic
+import utils
 import numpy as np
 import random
 import time
@@ -23,7 +24,7 @@ def search_max(grid, depth):
     maxScore = -INF
 
     for move in directions:
-        new_grid, moved = logic.direction(grid, move)
+        new_grid, moved = utils.direction(tuple(map(tuple,grid)), move)
         if not moved:
             continue
         score = search_min(new_grid, depth-1)
@@ -63,7 +64,7 @@ def getNextMoves(matrix):
 
     #start = time.time()
     for move in directions:
-        grid, moved = logic.direction(matrix, move)
+        grid, moved = utils.direction(tuple(map(tuple,matrix)), move)
         if not moved:
             continue
 
