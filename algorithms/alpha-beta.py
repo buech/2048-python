@@ -3,6 +3,7 @@ import numpy as np
 import random
 import time
 from evaluate import evaluate
+from copy import deepcopy
 
 """
 The minimax algorithm.
@@ -45,7 +46,7 @@ def search_min(grid, depth, alpha, beta):
 
     for i,j in zip(*validMoves):
         for num in [2,4]:
-            new_grid = addTile(grid, i, j, num)
+            new_grid = addTile(deepcopy(grid), i, j, num)
             score = search_max(new_grid, depth, alpha, minScore)
             if score < minScore:
                 minScore = score
