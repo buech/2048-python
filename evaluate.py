@@ -1,6 +1,6 @@
 import numpy as np
 
-def countFreeTiles(grid):
+def count_zeros(grid):
     return sum(r.count(0) for r in grid)
 
 def smoothness(grid):
@@ -13,4 +13,4 @@ def smoothness(grid):
 #    return logic.score(grid)
 
 def evaluate(grid):
-    return -smoothness(grid) - (16 - countFreeTiles(grid))**2 #+ 0.1*np.sum(np.log2(np.array(grid)+2)**2)
+    return -smoothness(grid) - (16 - count_zeros(grid))**2 #+ 0.1*np.sum(np.log2(np.array(grid)+2)**2)
