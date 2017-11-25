@@ -1,3 +1,5 @@
+import numpy as np
+
 def transpose(grid):
     return tuple(zip(*grid))
 
@@ -43,6 +45,14 @@ def direction(grid, move):
         result = merge_left(grid)
 
     return list(map(list, result)), result != grid
+
+def get_idx_free(grid):
+    return np.where(np.array(grid) == 0)
+
+def add_tile(grid, i, j, num):
+    tmp = list(map(list, grid))
+    tmp[i][j] = num
+    return tuple(map(tuple, tmp))
 
 if __name__=='__main__':
 

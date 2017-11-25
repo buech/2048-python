@@ -1,9 +1,7 @@
 import utils
-import numpy as np
 import random
 import time
 from evaluate import evaluate
-from copy import deepcopy
 
 """
 The minimax algorithm.
@@ -12,18 +10,11 @@ The minimax algorithm.
 directions = [1,2,3,4]
 INF = 1e8
 
-def generateValidMoves(grid):
-    return np.where(np.array(grid) == 0)
-
-def addTile(grid, i, j, num):
-    grid[i][j] = num
-    return grid
-
 def search_max(grid, depth):
     maxScore = -INF
 
     for move in directions:
-        new_grid, moved = utils.direction(tuple(map(tuple,grid)), move)
+        new_grid, moved = utils.direction(grid, move)
         if not moved:
             continue
         score = search_min(new_grid, depth-1)
@@ -36,15 +27,15 @@ def search_min(grid, depth):
     if depth == 0:
         return evaluate(grid)
 
-    validMoves = generateValidMoves(grid)
-    if len(validMoves[0]) == 0:
+    free_positions = utils.get_idx_free(grid)
+    if len(free_positions[0]) == 0:
         return evaluate(grid)
 
     minScore = INF
 
-    for i,j in zip(*validMoves):
-        for num in [2,4]:
-            new_grid = addTile(deepcopy(grid), i, j, num)
+    for num in [2,4]:
+        for i,j in zip(*free_positions):
+            new_grid = utils.add_tile(grid, i, j, num)
             score = search_max(new_grid, depth)
             if score < minScore:
                 minScore = score
