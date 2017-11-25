@@ -13,4 +13,4 @@ def smoothness(grid):
 #    return logic.score(grid)
 
 def evaluate(grid):
-    return -smoothness(grid) - (16 - countFreeTiles(grid))**2 #+ np.log2(np.max(grid))
+    return -smoothness(grid) - (16 - countFreeTiles(grid))**2 #+ 0.1*np.sum(np.log2(np.array(grid)+2)**2)
