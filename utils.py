@@ -1,4 +1,5 @@
 import numpy as np
+import utils_fortran
 
 def transpose(grid):
     return tuple(zip(*grid))
@@ -23,7 +24,7 @@ def merge_row_left(row):
     return tuple(tmp) + (0,) * (len(row) - len(tmp))
 
 def merge_left(grid):
-    return tuple(merge_row_left(row) for row in grid)
+    return tuple(map(tuple, utils_fortran.utils.merge_left(np.array(grid).T).T))#tuple(merge_row_left(row) for row in grid)
 
 def merge_right(grid):
     return reverse(merge_left(reverse(grid)))
