@@ -6,16 +6,14 @@ module utils
 
          integer :: k,i,j
 
+         merged(:,:) = 0
          do i=1,4
             k = 1
             do j=1,4
-               if(grid(j,i) /= 0) then
-                  merged(k,i) = grid(j,i)
+               if(grid(i,j) /= 0) then
+                  merged(i,k) = grid(i,j)
                   k = k+1
                end if
-            end do
-            do j=k,4
-               merged(j,i) = 0
             end do
          end do
 
@@ -31,9 +29,9 @@ module utils
 
          do i=1,4
             do j=1,3
-               if(merged(j,i) == merged(j+1,i) .and. merged(j,i) /= 0) then
-                  merged(j,i) = 2 * merged(j,i)
-                  merged(j+1,i) = 0
+               if(merged(i,j) == merged(i,j+1) .and. merged(i,j) /= 0) then
+                  merged(i,j) = 2 * merged(i,j)
+                  merged(i,j+1) = 0
                end if
             end do
          end do
@@ -41,6 +39,32 @@ module utils
          merged = shift_left(merged)
 
       end function merge_left
+
+      function merge_right(grid) result(merged)
+         integer, dimension(4,4), intent(in) :: grid
+         integer, dimension(4,4) :: merged
+
+         merged = merge_left(grid(:,4:1:-1))
+         merged = merged(:,4:1:-1)
+
+      end function merge_right
+
+      function merge_up(grid) result(merged)
+         integer, dimension(4,4), intent(in) :: grid
+         integer, dimension(4,4) :: merged
+
+         merged = transpose(merge_left(transpose(grid)))
+
+      end function merge_up
+
+      function merge_down(grid) result(merged)
+         integer, dimension(4,4), intent(in) :: grid
+         integer, dimension(4,4) :: merged
+
+         merged = merge_up(grid(4:1:-1,:))
+         merged = merged(4:1:-1,:)
+
+      end function merge_down
 
 end module utils
 
