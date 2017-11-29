@@ -97,36 +97,41 @@ program test
                     4, 4, 8, 8,&
                     4, 8,16, 0/), (/4, 4/))
 
+   print *, 'Original'
    do i=1,4
-      print *, grid(i,:)
+      print '(12 i3)', grid(i,:)
    end do
    print *
 
-   merged = merge_left(grid)
+   merged = direction(grid, 4)
 
+   print *, '<'
    do i=1,4
-      print *, merged(i,:)
+      print '(12 i3)', merged(i,:)
    end do
    print *
 
-   merged = merge_right(grid)
+   merged = direction(merged, 3)
 
+   print *, '>'
    do i=1,4
-      print *, merged(i,:)
+      print '(12 i3)', merged(i,:)
    end do
    print *
 
-   merged = merge_up(grid)
+   merged = direction(merged, 1)
 
+   print *, '^'
    do i=1,4
-      print *, merged(i,:)
+      print '(12 i3)', merged(i,:)
    end do
    print *
 
-   merged = merge_down(grid)
+   merged = direction(merged, 2)
 
+   print *, 'v'
    do i=1,4
-      print *, merged(i,:)
+      print '(12 i3)', merged(i,:)
    end do
    print *
 
