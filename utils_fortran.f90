@@ -66,6 +66,24 @@ module utils
 
       end function merge_down
 
+      function direction(grid, move) result(merged)
+         integer, dimension(4,4), intent(in) :: grid
+         integer, dimension(4,4) :: merged
+         integer :: moved
+
+         select case (move)
+            case (1)
+               merged = merge_up(grid)
+            case (2)
+               merged = merge_down(grid)
+            case (3)
+               merged = merge_right(grid)
+            case (4)
+               merged = merge_left(grid)
+         end select
+
+      end function direction
+
 end module utils
 
 program test
