@@ -74,35 +74,42 @@ program test
    integer, dimension(4,4) :: grid, merged
    integer :: i,j
 
-   grid(1,1) = 0
-   grid(1,2) = 0
-   grid(1,3) = 2
-   grid(1,4) = 2
-
-   grid(2,1) = 0
-   grid(2,2) = 2
-   grid(2,3) = 0
-   grid(2,4) = 4
-
-   grid(3,1) = 4
-   grid(3,2) = 4
-   grid(3,3) = 8
-   grid(3,4) = 8
-
-   grid(4,1) = 4
-   grid(4,2) = 8
-   grid(4,3) = 16
-   grid(4,4) = 0
+   grid = reshape((/0, 0, 2, 2,&
+                    0, 2, 0, 4,&
+                    4, 4, 8, 8,&
+                    4, 8,16, 0/), (/4, 4/))
 
    do i=1,4
-      print *, grid(i,1), grid(i,2), grid(i,3), grid(i,4)
+      print *, grid(i,:)
    end do
    print *
 
    merged = merge_left(grid)
 
    do i=1,4
-      print *, merged(i,1), merged(i,2), merged(i,3), merged(i,4)
+      print *, merged(i,:)
    end do
+   print *
+
+   merged = merge_right(grid)
+
+   do i=1,4
+      print *, merged(i,:)
+   end do
+   print *
+
+   merged = merge_up(grid)
+
+   do i=1,4
+      print *, merged(i,:)
+   end do
+   print *
+
+   merged = merge_down(grid)
+
+   do i=1,4
+      print *, merged(i,:)
+   end do
+   print *
 
 end program test
