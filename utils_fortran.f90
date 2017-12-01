@@ -107,41 +107,31 @@ program test
                     4, 8,16, 0/), (/4, 4/))
 
    print *, 'Original'
-   do i=1,4
-      print '(12 i3)', grid(i,:)
-   end do
+   print '(4 i3)', grid(:,:)
    print *
 
    merged = direction(grid, 4)
 
    print *, '<'
-   do i=1,4
-      print '(12 i3)', merged(i,:)
-   end do
+   print '(4 i3)', merged(:,:)
    print *
 
    merged = direction(merged, 3)
 
    print *, '>'
-   do i=1,4
-      print '(12 i3)', merged(i,:)
-   end do
+   print '(4 i3)', merged(:,:)
    print *
 
    merged = direction(merged, 1)
 
    print *, '^'
-   do i=1,4
-      print '(12 i3)', merged(i,:)
-   end do
+   print '(4 i3)', merged(:,:)
    print *
 
    merged = direction(merged, 2)
 
    print *, 'v'
-   do i=1,4
-      print '(12 i3)', merged(i,:)
-   end do
+   print '(4 i3)', merged(:,:)
    print *
 
 end program test
