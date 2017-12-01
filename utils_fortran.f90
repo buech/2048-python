@@ -1,6 +1,7 @@
 module utils
    contains
       function shift_left(grid) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, dimension(4,4) :: merged
 
@@ -20,6 +21,7 @@ module utils
       end function shift_left
 
       function merge_left(grid) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, dimension(4,4) :: merged
 
@@ -41,6 +43,7 @@ module utils
       end function merge_left
 
       function merge_right(grid) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, dimension(4,4) :: merged
 
@@ -50,6 +53,7 @@ module utils
       end function merge_right
 
       function merge_up(grid) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, dimension(4,4) :: merged
 
@@ -58,6 +62,7 @@ module utils
       end function merge_up
 
       function merge_down(grid) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, dimension(4,4) :: merged
 
@@ -67,7 +72,9 @@ module utils
       end function merge_down
 
       function direction(grid, move) result(merged)
+         implicit none
          integer, dimension(4,4), intent(in) :: grid
+         integer, intent(in) :: move
          integer, dimension(4,4) :: merged
          integer :: moved
 
@@ -88,6 +95,8 @@ end module utils
 
 program test
    use utils
+
+   implicit none
 
    integer, dimension(4,4) :: grid, merged
    integer :: i,j
