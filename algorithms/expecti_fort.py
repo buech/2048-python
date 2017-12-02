@@ -14,6 +14,6 @@ def getNextMoves(matrix):
 
     max_depth = 1
 
-    best_move = utils_fortran.expecti.get_next_move(np.array(matrix).T, max_depth)
+    best_move = utils_fortran.expecti.get_next_move(np.array(matrix), max_depth)
 
     return best_move if best_move else random.choice((1,2,3,4))
