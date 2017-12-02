@@ -1,96 +1,145 @@
 module utils
    contains
 
-      function shift_left(grid) result(merged)
+      subroutine shift_left(grid)
          implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer, dimension(4,4) :: merged
+         integer, dimension(4,4) :: grid
+         integer, dimension(4,4) :: shifted
 
          integer :: k,i,j
 
-         merged(:,:) = 0
+         shifted(:,:) = 0
          do i=1,4
             k = 1
             do j=1,4
                if(grid(i,j) /= 0) then
-                  merged(i,k) = grid(i,j)
+                  shifted(i,k) = grid(i,j)
                   k = k+1
                end if
             end do
          end do
 
-      end function shift_left
+         grid = shifted
 
-      function merge_left(grid) result(merged)
+      end subroutine
+
+      subroutine merge_left(grid)
          implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer, dimension(4,4) :: merged
+         integer, dimension(4,4) :: grid
 
-         integer :: i,j
-
-         merged = shift_left(grid)
+         integer :: i, j, k
 
          do i=1,4
             do j=1,3
-               if(merged(i,j) == merged(i,j+1) .and. merged(i,j) /= 0) then
-                  merged(i,j) = 2 * merged(i,j)
-                  merged(i,j+1) = 0
+               if(grid(i,j) /= 0) then
+                  k = j+1
+                  do while(grid(i,k) == 0 .and. k < 4)
+                     k = k+1
+                  end do
+                  if(grid(i,k) == grid(i,j)) then
+                     grid(i,j) = 2*grid(i,j)
+                     grid(i,k) = 0
+                  end if
                end if
             end do
          end do
 
-         merged = shift_left(merged)
+         call shift_left(grid)
 
-      end function merge_left
+      end subroutine
 
-      function merge_right(grid) result(merged)
+      subroutine reverse_rows(grid)
          implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer, dimension(4,4) :: merged
+         integer, dimension(4,4) :: grid
+         integer :: i, j, tmp
 
-         merged = merge_left(grid(:,4:1:-1))
-         merged = merged(:,4:1:-1)
+         do i=1,4
+            do j=1,2
+               tmp = grid(i,j)
+               grid(i,j) = grid(i,5-j)
+               grid(i,5-j) = tmp
+            end do
+         end do
 
-      end function merge_right
+      end subroutine
 
-      function merge_up(grid) result(merged)
+      subroutine reverse_cols(grid)
          implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer, dimension(4,4) :: merged
+         integer, dimension(4,4) :: grid
+         integer :: i, j, tmp
 
-         merged = transpose(merge_left(transpose(grid)))
+         do i=1,2
+            do j=1,4
+               tmp = grid(i,j)
+               grid(i,j) = grid(5-i,j)
+               grid(5-i,j) = tmp
+            end do
+         end do
 
-      end function merge_up
+      end subroutine
 
-      function merge_down(grid) result(merged)
+      subroutine sub_transpose(grid)
          implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer, dimension(4,4) :: merged
+         integer, dimension(4,4) :: grid
+         integer :: i, j
 
-         merged = merge_up(grid(4:1:-1,:))
-         merged = merged(4:1:-1,:)
+         do i=1,4
+            do j=1,4
+               grid(i,j) = grid(j,i)
+            end do
+         end do
 
-      end function merge_down
+      end subroutine
+
+      subroutine merge_right(grid)
+         implicit none
+         integer, dimension(4,4) :: grid
+
+         call reverse_rows(grid)
+         call merge_left(grid)
+         call reverse_rows(grid)
+
+      end subroutine
+
+      subroutine merge_up(grid)
+         implicit none
+         integer, dimension(4,4) :: grid
+
+         grid = transpose(grid)
+         call merge_left(grid)
+         grid = transpose(grid)
+
+      end subroutine
+
+      subroutine merge_down(grid)
+         implicit none
+         integer, dimension(4,4) :: grid
+
+         call reverse_cols(grid)
+         call merge_up(grid)
+         call reverse_cols(grid)
+
+      end subroutine
 
       function direction(grid, move) result(merged)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: move
          integer, dimension(4,4) :: merged
-         integer :: moved
 
+         merged = grid
          select case (move)
             case (1)
-               merged = merge_up(grid)
+               call merge_up(merged)
             case (2)
-               merged = merge_down(grid)
+               call merge_down(merged)
             case (3)
-               merged = merge_right(grid)
+               call merge_right(merged)
             case (4)
-               merged = merge_left(grid)
+               call merge_left(merged)
          end select
 
-      end function direction
+      end function
 
 end module utils
 
