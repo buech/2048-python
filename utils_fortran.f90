@@ -288,9 +288,10 @@ module expecti
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: max_depth
          integer, dimension(4,4) :: new_grid
-         integer :: max_score = -inf
+         integer :: max_score
          integer :: score, move, best_move
 
+         max_score = -inf
          best_move = 0
          do move = 1,4
             new_grid = direction(grid, move)
