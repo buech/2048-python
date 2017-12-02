@@ -77,7 +77,6 @@ module utils
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: move
          integer, dimension(4,4) :: merged
-         integer :: moved
 
          select case (move)
             case (1)
