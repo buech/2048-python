@@ -12,7 +12,7 @@ def getNextMoves(matrix):
     return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
     """
 
-    max_depth = 1
+    max_depth = 2
 
     best_move = utils_fortran.expecti.get_next_move(np.array(matrix), max_depth)
 
