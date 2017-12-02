@@ -34,13 +34,12 @@ def search_min(grid, depth):
 
     score = 0
 
-    for num, p in ((2, 0.9/n_free), (4, 0.1/n_free)):
+    for num, p in ((2, 0.9), (4, 0.1)):
         for i,j in zip(*free_positions):
-            if p > 0.0:
-                new_grid = utils.add_tile(grid, i, j, num)
-                score += p * search_max(new_grid, depth)
+            new_grid = utils.add_tile(grid, i, j, num)
+            score += p * search_max(new_grid, depth)
 
-    return score
+    return float(score)/n_free
 
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
