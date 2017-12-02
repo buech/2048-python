@@ -192,8 +192,8 @@ module eval
       function monotonicity(grid) result(score)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
-         integer :: score, i, j, m
-         real :: l, r, u, d, lr, ud
+         integer :: i, j, m
+         real :: l, r, u, d, lr, ud, score
          l = 0
          r = 0
          u = 0
@@ -258,7 +258,7 @@ module eval
       function evaluate(grid) result(score)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
-         integer :: score
+         real :: score
 
          score = monotonicity(grid) + smoothness(grid) - (16 - count_free_tiles(grid))**2
 
@@ -270,7 +270,7 @@ module expecti
    use utils
    use eval
 
-   integer, parameter :: inf = 1E08
+   real, parameter :: inf = 1E08
    integer, dimension(2) :: num = (/2, 4/)
    real, dimension(2) :: p = (/0.9, 0.1/)
 
@@ -282,7 +282,8 @@ module expecti
          integer, intent(in) :: depth
 
          integer, dimension(4,4) :: new_grid
-         integer :: move, score, max_score
+         integer :: move
+         real :: score, max_score
 
          max_score = -inf
          do move=1,4
@@ -302,7 +303,8 @@ module expecti
          implicit none
          integer, dimension(4,4) :: grid
          integer, intent(in) :: depth
-         integer :: n, i, j, free, score
+         integer :: n, i, j, free
+         real :: score
 
          if(depth == 0) then
             score = evaluate(grid)
@@ -337,8 +339,8 @@ module expecti
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: max_depth
          integer, dimension(4,4) :: new_grid
-         integer :: max_score
-         integer :: score, move, best_move
+         integer :: move, best_move
+         real :: score, max_score
 
          max_score = -inf
          best_move = 0
