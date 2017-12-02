@@ -198,7 +198,7 @@ module expecti
          integer :: max_score = -inf
          integer :: score, move, best_move
 
-         best_move = 1
+         best_move = 0
          do move = 1,4
             new_grid = direction(grid, move)
             if(all(new_grid == grid)) then
