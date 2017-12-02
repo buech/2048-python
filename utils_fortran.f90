@@ -190,9 +190,10 @@ module expecti
 
       end function
 
-      function get_next_move(grid) result(best_move)
+      function get_next_move(grid, max_depth) result(best_move)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
+         integer, intent(in) :: max_depth
          integer, dimension(4,4) :: new_grid
          integer :: max_score = -inf
          integer :: score, move, best_move
@@ -203,7 +204,7 @@ module expecti
             if(all(new_grid == grid)) then
                cycle
             end if
-            score = search_min(new_grid, 1)
+            score = search_min(new_grid, max_depth)
             if(score > max_score) then
                max_score = score
                best_move = move
@@ -255,6 +256,6 @@ program test
    print '(4 i3)', merged(:,:)
    print *
 
-   print *, get_next_move(grid)
+   print *, get_next_move(grid, 1)
 
 end program test
