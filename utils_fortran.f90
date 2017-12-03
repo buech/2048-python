@@ -360,6 +360,108 @@ module expecti
 
 end module expecti
 
+module alpha_beta
+   use utils
+   use eval
+
+   real, parameter :: inf = 1E08
+   integer, dimension(2) :: num = (/2, 4/)
+
+   contains
+
+      function search_max(grid, depth, alpha, beta) result(max_score)
+         implicit none
+         integer, dimension(4,4), intent(in) :: grid
+         integer, intent(in) :: depth
+         real, intent(in) :: alpha, beta
+
+         integer, dimension(4,4) :: new_grid
+         integer :: move
+         real :: score, max_score
+
+         max_score = alpha
+         do move=1,4
+            new_grid = direction(grid, move)
+            if(all(new_grid == grid)) then
+               cycle
+            end if
+            score = search_min(new_grid, depth-1, max_score, beta)
+            if(score > max_score) then
+               max_score = score
+               if(max_score >= beta) then
+                  exit
+               end if
+            end if
+         end do
+
+      end function
+
+      function search_min(grid, depth, alpha, beta) result(min_score)
+         implicit none
+         integer, dimension(4,4) :: grid
+         integer, intent(in) :: depth
+         real, intent(in) :: alpha, beta
+         integer :: n, i, j, free
+         real :: min_score, score
+
+         if(depth == 0) then
+            min_score = evaluate(grid)
+            return
+         end if
+
+         min_score = beta
+         free = 0
+         do n=1,2
+            do i=1,4
+               do j=1,4
+                  if(grid(i,j) == 0) then
+                     grid(i,j) = num(n)
+                     free = free + 1
+                     score = search_max(grid, depth, alpha, min_score)
+                     grid(i,j) = 0
+                     if(score < min_score) then
+                        min_score = score
+                        if(min_score <= alpha) then
+                           return
+                        end if
+                     end if
+                  end if
+               end do
+            end do
+            if(free == 0) then
+               min_score = evaluate(grid)
+               return
+            end if
+         end do
+
+      end function
+
+      function get_next_move(grid, max_depth) result(best_move)
+         implicit none
+         integer, dimension(4,4), intent(in) :: grid
+         integer, intent(in) :: max_depth
+         integer, dimension(4,4) :: new_grid
+         integer :: move, best_move
+         real :: max_score, score
+
+         max_score = -inf
+         best_move = 0
+         do move = 1,4
+            new_grid = direction(grid, move)
+            if(all(new_grid == grid)) then
+               cycle
+            end if
+            score = search_min(new_grid, max_depth, max_score, inf)
+            if(score > max_score) then
+               max_score = score
+               best_move = move
+            end if
+         end do
+
+      end function
+
+end module
+
 program test
    use utils
    use expecti
