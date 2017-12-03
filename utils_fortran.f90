@@ -4,22 +4,22 @@ module utils
       subroutine shift_left(grid)
          implicit none
          integer, dimension(4,4) :: grid
-         integer, dimension(4,4) :: shifted
 
          integer :: k,i,j
 
-         shifted(:,:) = 0
          do i=1,4
-            k = 1
-            do j=1,4
-               if(grid(i,j) /= 0) then
-                  shifted(i,k) = grid(i,j)
-                  k = k+1
+            do j=1,3
+               if(grid(i,j) == 0) then
+                  do k=j+1,4
+                     if(grid(i,k) /= 0) then
+                        grid(i,j) = grid(i,k)
+                        grid(i,k) = 0
+                        exit
+                     end if
+                  end do
                end if
             end do
          end do
-
-         grid = shifted
 
       end subroutine
 
