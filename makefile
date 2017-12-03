@@ -1,7 +1,14 @@
-utils_fortran.so: utils_fortran.f90
-	f2py -c --arch=-march=native --opt=-Ofast -m utils_fortran utils_fortran.f90
+FC = gfortran
+F2PYFLAGS = --arch=-march=native --opt=-Ofast
+MODNAME = utils_fortran
+
+$(MODNAME).so: $(MODNAME).f90
+	f2py -c $(F2PYFLAGS) -m $(MODNAME) $<
+
+test.x: $(MODNAME).f90
+	$(FC) -o $@ $<
 
 .PHONY: clean
 
 clean:
-	rm -rf *.so *.so.* *.mod
+	rm -rf *.so *.so.* *.mod *.x
