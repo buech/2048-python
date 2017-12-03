@@ -42,7 +42,7 @@ def search_min(grid, depth, alpha, beta):
             if score < minScore:
                 minScore = score
                 if minScore <= alpha:
-                    break
+                    return minScore
 
     return minScore
 
