@@ -107,9 +107,9 @@ module utils
          implicit none
          integer, dimension(4,4) :: grid
 
-         grid = transpose(grid)
+         call sub_transpose(grid)
          call merge_left(grid)
-         grid = transpose(grid)
+         call sub_transpose(grid)
 
       end subroutine
 
