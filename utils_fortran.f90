@@ -81,11 +81,13 @@ module utils
       subroutine sub_transpose(grid)
          implicit none
          integer, dimension(4,4) :: grid
-         integer :: i, j
+         integer :: i, j, tmp
 
-         do i=1,4
-            do j=1,4
+         do i=1,3
+            do j=i+1,4
+               tmp = grid(i,j)
                grid(i,j) = grid(j,i)
+               grid(j,i) = tmp
             end do
          end do
 
