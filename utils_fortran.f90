@@ -272,7 +272,7 @@ module expecti
    use utils
    use eval
 
-   real, parameter :: inf = 1E08
+   real, parameter :: inf = 1.0E08
    integer, dimension(2) :: num = (/2, 4/)
    real, dimension(2) :: p = (/0.9, 0.1/)
 
@@ -366,7 +366,7 @@ module alpha_beta
    use utils
    use eval
 
-   real, parameter :: inf = 1E08
+   real, parameter :: inf = 1.0E08
    integer, dimension(2) :: num = (/2, 4/)
 
    contains
