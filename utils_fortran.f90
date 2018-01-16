@@ -262,7 +262,9 @@ module eval
          integer, dimension(4,4), intent(in) :: grid
          real :: score
 
-         score = monotonicity(grid) + smoothness(grid) - (16 - count_free_tiles(grid))**2
+         score = monotonicity(grid) &
+               + smoothness(grid) &
+               - (16 - count_free_tiles(grid))**2
 
       end function
 
