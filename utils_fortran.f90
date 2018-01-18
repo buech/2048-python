@@ -150,8 +150,10 @@ module eval
    real, parameter :: lost_penalty = 200000.0
    real, parameter :: empty_weight = 270.0
    real, parameter :: mono_weight = 47.0
-   real, parameter :: mono_pow = 4.0
+   real, parameter :: mono_pow = 1.0!4.0
    real, parameter :: merges_weight = 3*700.0
+   real, parameter :: sum_weight = 11.0
+   real, parameter :: sum_pow = 1.0!3.5
 
    contains
 
@@ -166,6 +168,21 @@ module eval
                if(grid(i,j) == 0) then
                   n = n + 1
                end if
+            end do
+         end do
+
+      end function
+
+      function sum_grid(grid) result(s)
+         implicit none
+         integer, dimension(4,4), intent(in) :: grid
+         integer :: i, j
+         real :: s
+
+         s = 0
+         do i=1,4
+            do j=1,4
+               s = s + grid(i,j)**sum_pow
             end do
          end do
 
@@ -322,7 +339,8 @@ module eval
                           - mono_weight * (monotonicity2(row) + monotonicity2(col))
          end do
 
-         score = score + empty_weight * count_free_tiles(grid)
+         score = score + empty_weight * count_free_tiles(grid) &
+                       - sum_weight * sum_grid(grid)
 
       end function
 
