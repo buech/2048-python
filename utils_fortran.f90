@@ -150,10 +150,10 @@ module eval
    real, parameter :: lost_penalty = 200000.0
    real, parameter :: empty_weight = 270.0
    real, parameter :: mono_weight = 47.0
-   real, parameter :: mono_pow = 1.0!4.0
-   real, parameter :: merges_weight = 3*700.0
+   real, parameter :: mono_pow = 4.0
+   real, parameter :: merges_weight = 2000.0
    real, parameter :: sum_weight = 11.0
-   real, parameter :: sum_pow = 1.0!3.5
+   real, parameter :: sum_pow = 3.5
 
    contains
 
