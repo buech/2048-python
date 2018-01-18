@@ -37,7 +37,7 @@ module utils
                      k = k+1
                   end do
                   if(grid(i,k) == grid(i,j)) then
-                     grid(i,j) = 2*grid(i,j)
+                     grid(i,j) = grid(i,j) + 1
                      grid(i,k) = 0
                   end if
                end if
@@ -351,7 +351,7 @@ module expecti
    use eval
 
    real, parameter :: inf = 1.0E08
-   integer, dimension(2) :: num = (/2, 4/)
+   integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
 
    contains
@@ -445,7 +445,7 @@ module alpha_beta
    use eval
 
    real, parameter :: inf = 1.0E08
-   integer, dimension(2) :: num = (/2, 4/)
+   integer, dimension(2) :: num = (/1, 2/)
 
    contains
 
@@ -550,10 +550,10 @@ program test
 
    integer, dimension(4,4) :: grid, merged
 
-   grid = reshape((/0, 0, 2, 2,&
-                    0, 2, 0, 4,&
-                    4, 4, 8, 8,&
-                    4, 8,16, 0/), (/4, 4/))
+   grid = reshape((/0, 0, 1, 1,&
+                    0, 1, 0, 2,&
+                    2, 2, 3, 3,&
+                    2, 3, 4, 0/), (/4, 4/))
 
    print *, 'Original'
    print '(4 i3)', grid(:,:)
