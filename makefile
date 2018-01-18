@@ -11,4 +11,4 @@ test.x: $(MODNAME).f90
 .PHONY: clean
 
 clean:
-	rm -rf *.so *.mod *.x
+	rm -f $(MODNAME).so $(MODNAME).mod test.x
