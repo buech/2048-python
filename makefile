@@ -8,7 +8,7 @@ $(MODNAME).so: $(MODNAME).f90
 test.x: $(MODNAME).f90
 	$(FC) -o $@ $<
 
-.PHONY: clean
-
 clean:
 	rm -f $(MODNAME).so $(MODNAME).mod test.x
+
+.PHONY: clean
