@@ -13,5 +13,5 @@ fi
 echo "Running $(expr $NLOOPS \* $NTHREADS) games in $NTHREADS threads, behold!"
 
 for i in $(seq 1 $NLOOPS); do
-	parallel -n0 'python runner.py -a expecti_fort -s$RANDOM' ::: $(seq 1 $NTHREADS) | $GREP '^(?!(Algorithm|\-\-))'
+	parallel -n0 python runner.py -a $1 -s'$RANDOM' ::: $(seq 1 $NTHREADS) | $GREP '^(?!(Algorithm|\-\-))'
 done
