@@ -188,99 +188,6 @@ module eval
 
       end function
 
-      function smoothness(grid) result(score)
-         implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer :: score, i, j, s
-
-         score = 0
-         do i=1,4
-            do j=1,4
-               s = 1E08
-               if(i > 1) then
-                  s = min(s, abs(grid(i,j) - grid(i-1,j)))
-               end if
-               if(j > 1) then
-                  s = min(s, abs(grid(i,j) - grid(i,j-1)))
-               end if
-               if(i < 4) then
-                  s = min(s, abs(grid(i,j) - grid(i+1,j)))
-               end if
-               if(j < 4) then
-                  s = min(s, abs(grid(i,j) - grid(i,j+1)))
-               end if
-               score = score - s
-            end do
-         end do
-
-      end function
-
-      function monotonicity(grid) result(score)
-         implicit none
-         integer, dimension(4,4), intent(in) :: grid
-         integer :: i, j, m
-         real :: l, r, u, d, lr, ud, score
-         l = 0
-         r = 0
-         u = 0
-         d = 0
-         lr = 0
-         ud = 0
-
-         do i=1,4
-            m = 0
-            do j=1,3
-               if(grid(i,j) >= grid(i,j+1)) then
-                  m = m + 1
-                  l = l + 4*m**2
-               else
-                  l = l - abs(grid(i,j) - grid(i,j+1)) * 1.5
-                  m = 0
-               end if
-            end do
-            m = 0
-            do j=1,3
-               if(grid(i,j) <= grid(i,j+1)) then
-                  m = m + 1
-                  r = r + 4*m**2
-               else
-                  r = r - abs(grid(i,j) - grid(i,j+1)) * 1.5
-                  m = 0
-               end if
-            end do
-         end do
-
-         lr = lr + max(l, r)
-
-         do j=1,4
-            m = 0
-            do i=1,3
-               if(grid(i,j) >= grid(i+1,j)) then
-                  m = m + 1
-                  u = u + 4*m**2
-               else
-                  u = u - abs(grid(i,j) - grid(i+1,j)) * 1.5
-                  m = 0
-               end if
-            end do
-            m = 0
-            do i=1,3
-               if(grid(i,j) <= grid(i+1,j)) then
-                  m = m + 1
-                  d = d + 4*m**2
-               else
-                  d = d - abs(grid(i,j) - grid(i+1,j)) * 1.5
-                  m = 0
-               end if
-            end do
-         end do
-
-         ud = ud + max(u, d)
-
-         score = lr + ud
-
-      end function
-
       function merges(row) result(m)
          implicit none
          integer, dimension(4), intent(in) :: row
@@ -301,7 +208,7 @@ module eval
 
       end function
 
-      function monotonicity2(row) result(score)
+      function monotonicity(row) result(score)
          implicit none
          integer, dimension(4), intent(in) :: row
          real :: score, left, right
@@ -335,12 +242,14 @@ module eval
          do i=1,4
             row = grid(i,:)
             col = grid_t(i,:)
-            score = score + merges_weight * (merges(row) + merges(col)) &
-                          - mono_weight * (monotonicity2(row) + monotonicity2(col))
+            score = score &
+                  + merges_weight * (merges(row) + merges(col)) &
+                  - mono_weight * (monotonicity(row) + monotonicity(col))
          end do
 
-         score = score + empty_weight * count_free_tiles(grid) &
-                       - sum_weight * sum_grid(grid)
+         score = score &
+               + empty_weight * count_free_tiles(grid) &
+               - sum_weight * sum_grid(grid)
 
       end function
 
