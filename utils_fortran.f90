@@ -146,6 +146,13 @@ module utils
 end module utils
 
 module eval
+
+   real, parameter :: lost_penalty = 200000.0
+   real, parameter :: empty_weight = 270.0
+   real, parameter :: mono_weight = 47.0
+   real, parameter :: mono_pow = 4.0
+   real, parameter :: merges_weight = 3*700.0
+
    contains
 
       function count_free_tiles(grid) result(n)
@@ -257,14 +264,65 @@ module eval
 
       end function
 
+      function merges(row) result(m)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: m, i, k
+
+         m = 0
+         do i=1,3
+            if(row(i) /= 0) then
+               k = i+1
+               do while(row(k) == 0 .and. k < 4)
+                  k = k+1
+               end do
+               if(row(k) == row(i)) then
+                  m = m+1
+               end if
+            end if
+         end do
+
+      end function
+
+      function monotonicity2(row) result(score)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         real :: score, left, right
+         integer :: i
+
+         left = 0.0
+         right = 0.0
+         do i=1,3
+            if(row(i) > row(i+1)) then
+               left = left + (row(i)**mono_pow - row(i+1)**mono_pow)
+            else
+               right = right + (row(i+1)**mono_pow - row(i)**mono_pow)
+            end if
+         end do
+
+         score = min(left, right)
+
+      end function
+
       function evaluate(grid) result(score)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
          real :: score
+         integer, dimension(4) :: row, col
+         integer, dimension(4,4) :: grid_t
+         integer :: i
 
-         score = monotonicity(grid) &
-               + smoothness(grid) &
-               - (16 - count_free_tiles(grid))**2
+         grid_t = transpose(grid)
+
+         score = 0.0
+         do i=1,4
+            row = grid(i,:)
+            col = grid_t(i,:)
+            score = score + merges_weight * (merges(row) + merges(col)) &
+                          - mono_weight * (monotonicity2(row) + monotonicity2(col))
+         end do
+
+         score = score + empty_weight * count_free_tiles(grid)
 
       end function
 
