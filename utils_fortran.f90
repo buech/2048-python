@@ -233,15 +233,12 @@ module eval
          integer, dimension(4,4), intent(in) :: grid
          real :: score
          integer, dimension(4) :: row, col
-         integer, dimension(4,4) :: grid_t
          integer :: i
-
-         grid_t = transpose(grid)
 
          score = 0.0
          do i=1,4
             row = grid(i,:)
-            col = grid_t(i,:)
+            col = grid(:,i)
             score = score &
                   + merges_weight * (merges(row) + merges(col)) &
                   - mono_weight * (monotonicity(row) + monotonicity(col))
@@ -259,16 +256,17 @@ module expecti
    use utils
    use eval
 
-   real, parameter :: inf = 1.0E08
+   real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
 
    contains
 
-      function search_max(grid, depth) result(max_score)
+      function search_max(grid, depth, prob) result(max_score)
          implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: depth
+         real, intent(in) :: prob
 
          integer, dimension(4,4) :: new_grid
          integer :: move
@@ -280,7 +278,7 @@ module expecti
             if(all(new_grid == grid)) then
                cycle
             end if
-            score = search_min(new_grid, depth-1)
+            score = search_min(new_grid, depth-1, prob)
             if(score > max_score) then
                max_score = score
             end if
@@ -288,38 +286,40 @@ module expecti
 
       end function search_max
 
-      function search_min(grid, depth) result(score)
+      function search_min(grid, depth, prob) result(score)
          implicit none
          integer, dimension(4,4) :: grid
          integer, intent(in) :: depth
+         real, intent(in) :: prob
          integer :: n, i, j, free
-         real :: score
+         real :: score, oofree
 
-         if(depth == 0) then
+         if(depth == 0 .or. prob < 0.0001) then
             score = evaluate(grid)
             return
          end if
 
          score = 0
-         free = 0
+         free = count_free_tiles(grid)
+         if(free == 0) then
+            score = evaluate(grid)
+            return
+         end if
+         oofree = 1.0 / free
          do n=1,2
             do i=1,4
                do j=1,4
                   if(grid(i,j) == 0) then
                      grid(i,j) = num(n)
                      free = free + 1
-                     score = score + p(n) * search_max(grid, depth)
+                     score = score + p(n) * search_max(grid, depth, p(n)*prob*oofree)
                      grid(i,j) = 0
                   end if
                end do
             end do
-            if(free == 0) then
-               score = evaluate(grid)
-               return
-            end if
          end do
 
-         score = 2 * score / free
+         score = score * oofree
 
       end function
 
@@ -338,7 +338,7 @@ module expecti
             if(all(new_grid == grid)) then
                cycle
             end if
-            score = search_min(new_grid, max_depth)
+            score = search_min(new_grid, max_depth, 1.0)
             if(score > max_score) then
                max_score = score
                best_move = move
@@ -353,7 +353,7 @@ module alpha_beta
    use utils
    use eval
 
-   real, parameter :: inf = 1.0E08
+   real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
 
    contains
