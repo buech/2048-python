@@ -233,15 +233,12 @@ module eval
          integer, dimension(4,4), intent(in) :: grid
          real :: score
          integer, dimension(4) :: row, col
-         integer, dimension(4,4) :: grid_t
          integer :: i
-
-         grid_t = transpose(grid)
 
          score = 0.0
          do i=1,4
             row = grid(i,:)
-            col = grid_t(i,:)
+            col = grid(:,i)
             score = score &
                   + merges_weight * (merges(row) + merges(col)) &
                   - mono_weight * (monotonicity(row) + monotonicity(col))
