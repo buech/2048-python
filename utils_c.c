@@ -72,8 +72,15 @@ static float _evaluate(uint64_t board) {
         + evaluate_row(board & 0x000000000000ffffULL);
 }
 
+static float _evaluate_table(uint64_t board) {
+   return score_table[(board & 0xffff000000000000ULL) >> 48]
+        + score_table[(board & 0x0000ffff00000000ULL) >> 32]
+        + score_table[(board & 0x00000000ffff0000ULL) >> 16]
+        + score_table[board & 0x000000000000ffffULL];
+}
+
 static float evaluate(uint64_t board) {
-   return _evaluate(board) + _evaluate(transpose(board));
+   return _evaluate_table(board) + _evaluate_table(transpose(board));
 }
 
 void init() {
