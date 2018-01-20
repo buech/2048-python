@@ -35,6 +35,7 @@ if __name__=='__main__':
 
     row = (15, 0, 10, 4)
     enc = encode_row(row)
+    assert enc == 0xf0a4
     dec = decode_row(enc)
     assert row == dec
 
@@ -44,5 +45,6 @@ if __name__=='__main__':
              (0, 1, 0, 2))
 
     encb = encode(board)
+    assert encb == 0x5014312312340102
     decb = decode(encb)
     assert board == decb
