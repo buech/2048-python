@@ -40,6 +40,13 @@ static float evaluate_row(uint16_t x) {
    float mono = 0, sum = 0;
    int merges = 0, empty = 0;
 
+   for(int i = 0; i < 4; ++i) {
+      if(row[i] != 0) {
+         sum += pow(row[i], SUM_POW);
+      }
+      else empty++;
+   }
+
    float left = 0, right = 0;
    for(int i = 0; i < 3; ++i) {
       if(row[i] > row[i+1]) {
@@ -49,12 +56,10 @@ static float evaluate_row(uint16_t x) {
          right += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
       }
       if(row[i] != 0) {
-         sum += pow(row[i], SUM_POW);
          int k = i+1;
          while(row[k] == 0 && k < 4) k++;
          if(row[k] == row[i]) merges++;
       }
-      else empty++;
    }
 
    return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
