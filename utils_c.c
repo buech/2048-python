@@ -160,8 +160,8 @@ static int count_free_tiles(uint64_t x) {
    return x & 0xf;
 }
 
-float search_min(uint64_t board, int depth, float p);
-float search_max(uint64_t board, int depth, float p) {
+static float search_min(uint64_t board, int depth, float p);
+static float search_max(uint64_t board, int depth, float p) {
    float max_score = -INF;
 
    for(int move = 1; move < 5; ++move) {
@@ -174,7 +174,7 @@ float search_max(uint64_t board, int depth, float p) {
    return max_score;
 }
 
-float search_min(uint64_t board, int depth, float p) {
+static float search_min(uint64_t board, int depth, float p) {
    if(depth == 0 || p < 0.0001f) return evaluate(board);
 
    float score = 0;
