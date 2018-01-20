@@ -311,7 +311,6 @@ module expecti
                do j=1,4
                   if(grid(i,j) == 0) then
                      grid(i,j) = num(n)
-                     free = free + 1
                      score = score + p(n) * search_max(grid, depth, p(n)*prob*oofree)
                      grid(i,j) = 0
                   end if
