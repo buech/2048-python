@@ -4,10 +4,11 @@
 
 #define INF 1.0e8
 
-uint16_t merge_left_table[0xffff];
-uint16_t merge_right_table[0xffff];
+static uint16_t merge_left_table[0xffff];
+static uint16_t merge_right_table[0xffff];
+static uint16_t score_table[0xffff];
 
-uint64_t transpose(uint64_t x) {
+static inline uint64_t transpose(uint64_t x) {
    uint64_t t;
    t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ULL;
    x ^= t ^ (t << 12);
@@ -17,7 +18,7 @@ uint64_t transpose(uint64_t x) {
    return x;
 }
 
-uint16_t reverse_row(uint16_t row) {
+static inline uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
 }
 
@@ -51,29 +52,29 @@ void init() {
    }
 }
 
-uint64_t merge_left(uint64_t board) {
+static inline uint64_t merge_left(uint64_t board) {
    return ((uint64_t)merge_left_table[(board & 0xffff000000000000ULL) >> 48] << 48) |
           ((uint64_t)merge_left_table[(board & 0x0000ffff00000000ULL) >> 32] << 32) |
           ((uint64_t)merge_left_table[(board & 0x00000000ffff0000ULL) >> 16] << 16) |
            (uint64_t)merge_left_table[ board & 0x000000000000ffffULL];
 }
 
-uint64_t merge_right(uint64_t board) {
+static inline uint64_t merge_right(uint64_t board) {
    return ((uint64_t)merge_right_table[(board & 0xffff000000000000ULL) >> 48] << 48) |
           ((uint64_t)merge_right_table[(board & 0x0000ffff00000000ULL) >> 32] << 32) |
           ((uint64_t)merge_right_table[(board & 0x00000000ffff0000ULL) >> 16] << 16) |
            (uint64_t)merge_right_table[ board & 0x000000000000ffffULL];
 }
 
-uint64_t merge_up(uint64_t board) {
+static inline uint64_t merge_up(uint64_t board) {
    return transpose(merge_left(transpose(board)));
 }
 
-uint64_t merge_down(uint64_t board) {
+static inline uint64_t merge_down(uint64_t board) {
    return transpose(merge_right(transpose(board)));
 }
 
-uint64_t direction(uint64_t board, int move) {
+static inline uint64_t direction(uint64_t board, int move) {
    switch(move) {
       case 1: return merge_up(board);
       case 2: return merge_down(board);
@@ -83,7 +84,7 @@ uint64_t direction(uint64_t board, int move) {
    }
 }
 
-int count_free_tiles(uint64_t x) {
+static int count_free_tiles(uint64_t x) {
    x |= (x >> 2) & 0x3333333333333333ULL;
    x |= (x >> 1);
    x = ~x & 0x1111111111111111ULL;
@@ -96,19 +97,23 @@ int count_free_tiles(uint64_t x) {
    return x & 0xf;
 }
 
-const float MONO_WEIGHT = 47.0;
-const float MONO_POW = 4.0;
-const float MERGES_WEIGHT = 2000.0;
+static const float LOST_PENALTY = 200000.0;
+static const float EMPTY_WEIGHT = 270.0;
+static const float MONO_WEIGHT = 47.0;
+static const float MONO_POW = 4.0;
+static const float MERGES_WEIGHT = 2000.0;
+static const float SUM_WEIGHT = 11.0;
+static const float SUM_POW = 3.5;
 
-float min(float a, float b) {
+static inline float min(float a, float b) {
    return a < b ? a:b;
 }
 
-float evaluate_row(uint16_t x) {
+static float evaluate_row(uint16_t x) {
    unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
 
-   float mono = 0;
-   int merges = 0;
+   float mono = 0, sum = 0;
+   int merges = 0, empty = 0;
 
    float left = 0, right = 0;
    for(int i = 0; i < 3; ++i) {
@@ -116,27 +121,36 @@ float evaluate_row(uint16_t x) {
          left += pow(row[i], MONO_POW) - pow(row[i+1], MONO_POW);
       }
       else {
-         left += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
+         right += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
       }
       if(row[i] != 0) {
+         sum += pow(row[i], SUM_POW);
          int k = i+1;
          while(row[k] == 0 && k < 4) k++;
          if(row[k] == row[i]) merges++;
       }
+      else empty++;
    }
 
-   return MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right);
+   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
 }
 
-float evaluate(uint64_t board) {
+static float evaluate(uint64_t board) {
+   uint64_t trans = transpose(board);
    uint16_t rows[4] = {(board & 0xffff000000000000ULL) >> 48,
                        (board & 0x0000ffff00000000ULL) >> 32,
                        (board & 0x00000000ffff0000ULL) >> 16,
                         board & 0x000000000000ffffULL};
 
+   uint16_t cols[4] = {(trans & 0xffff000000000000ULL) >> 48,
+                       (trans & 0x0000ffff00000000ULL) >> 32,
+                       (trans & 0x00000000ffff0000ULL) >> 16,
+                        trans & 0x000000000000ffffULL};
+
    float score = 0;
    for(int i = 0; i < 4; ++i) {
       score += evaluate_row(rows[i]);
+      score += evaluate_row(cols[i]);
    }
 
    return score;
