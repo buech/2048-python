@@ -171,7 +171,7 @@ float search_max(uint64_t board, int depth, float p) {
 }
 
 float search_min(uint64_t board, int depth, float p) {
-   if(depth == 0 || p < 0.0001) return evaluate(board);
+   if(depth == 0 || p < 0.0001f) return evaluate(board);
 
    float score = 0;
    int free = count_free_tiles(board);
