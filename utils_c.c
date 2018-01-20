@@ -6,7 +6,7 @@
 
 static uint16_t merge_left_table[0xffff];
 static uint16_t merge_right_table[0xffff];
-static uint16_t score_table[0xffff];
+static float score_table[0xffff];
 
 static inline uint64_t transpose(uint64_t x) {
    uint64_t t;
@@ -20,6 +20,55 @@ static inline uint64_t transpose(uint64_t x) {
 
 static inline uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
+}
+
+static const float LOST_PENALTY = 200000.0;
+static const float EMPTY_WEIGHT = 270.0;
+static const float MONO_WEIGHT = 47.0;
+static const float MONO_POW = 4.0;
+static const float MERGES_WEIGHT = 2000.0;
+static const float SUM_WEIGHT = 11.0;
+static const float SUM_POW = 3.5;
+
+static inline float min(float a, float b) {
+   return a < b ? a:b;
+}
+
+static float evaluate_row(uint16_t x) {
+   unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
+
+   float mono = 0, sum = 0;
+   int merges = 0, empty = 0;
+
+   float left = 0, right = 0;
+   for(int i = 0; i < 3; ++i) {
+      if(row[i] > row[i+1]) {
+         left += pow(row[i], MONO_POW) - pow(row[i+1], MONO_POW);
+      }
+      else {
+         right += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
+      }
+      if(row[i] != 0) {
+         sum += pow(row[i], SUM_POW);
+         int k = i+1;
+         while(row[k] == 0 && k < 4) k++;
+         if(row[k] == row[i]) merges++;
+      }
+      else empty++;
+   }
+
+   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
+}
+
+static float _evaluate(uint64_t board) {
+   return evaluate_row((board & 0xffff000000000000ULL) >> 48)
+        + evaluate_row((board & 0x0000ffff00000000ULL) >> 32)
+        + evaluate_row((board & 0x00000000ffff0000ULL) >> 16)
+        + evaluate_row(board & 0x000000000000ffffULL);
+}
+
+static float evaluate(uint64_t board) {
+   return _evaluate(board) + _evaluate(transpose(board));
 }
 
 void init() {
@@ -49,6 +98,8 @@ void init() {
 
       merge_left_table[x] = merged;
       merge_right_table[x_rev] = reverse_row(merged);
+
+      score_table[x] = evaluate_row(x);
    }
 }
 
@@ -95,65 +146,6 @@ static int count_free_tiles(uint64_t x) {
    x += x >> 4;
 
    return x & 0xf;
-}
-
-static const float LOST_PENALTY = 200000.0;
-static const float EMPTY_WEIGHT = 270.0;
-static const float MONO_WEIGHT = 47.0;
-static const float MONO_POW = 4.0;
-static const float MERGES_WEIGHT = 2000.0;
-static const float SUM_WEIGHT = 11.0;
-static const float SUM_POW = 3.5;
-
-static inline float min(float a, float b) {
-   return a < b ? a:b;
-}
-
-static float evaluate_row(uint16_t x) {
-   unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
-
-   float mono = 0, sum = 0;
-   int merges = 0, empty = 0;
-
-   float left = 0, right = 0;
-   for(int i = 0; i < 3; ++i) {
-      if(row[i] > row[i+1]) {
-         left += pow(row[i], MONO_POW) - pow(row[i+1], MONO_POW);
-      }
-      else {
-         right += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
-      }
-      if(row[i] != 0) {
-         sum += pow(row[i], SUM_POW);
-         int k = i+1;
-         while(row[k] == 0 && k < 4) k++;
-         if(row[k] == row[i]) merges++;
-      }
-      else empty++;
-   }
-
-   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
-}
-
-static float evaluate(uint64_t board) {
-   uint64_t trans = transpose(board);
-   uint16_t rows[4] = {(board & 0xffff000000000000ULL) >> 48,
-                       (board & 0x0000ffff00000000ULL) >> 32,
-                       (board & 0x00000000ffff0000ULL) >> 16,
-                        board & 0x000000000000ffffULL};
-
-   uint16_t cols[4] = {(trans & 0xffff000000000000ULL) >> 48,
-                       (trans & 0x0000ffff00000000ULL) >> 32,
-                       (trans & 0x00000000ffff0000ULL) >> 16,
-                        trans & 0x000000000000ffffULL};
-
-   float score = 0;
-   for(int i = 0; i < 4; ++i) {
-      score += evaluate_row(rows[i]);
-      score += evaluate_row(cols[i]);
-   }
-
-   return score;
 }
 
 float search_min(uint64_t board, int depth, float p);
