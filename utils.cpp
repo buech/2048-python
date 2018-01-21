@@ -21,9 +21,9 @@ typedef std::map<uint64_t, map_entry_t> map_t;
 
 static inline uint64_t transpose(uint64_t x) {
    uint64_t t;
-   t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ULL;
+   t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ull;
    x ^= t ^ (t << 12);
-   t = (x ^ (x >> 24)) & 0x00000000ff00ff00ULL;
+   t = (x ^ (x >> 24)) & 0x00000000ff00ff00ull;
    x ^= t ^ (t << 24);
 
    return x;
@@ -73,17 +73,17 @@ static float evaluate_row(uint16_t x) {
 }
 
 static float _evaluate(uint64_t board) {
-   return evaluate_row((board & 0xffff000000000000ULL) >> 48)
-        + evaluate_row((board & 0x0000ffff00000000ULL) >> 32)
-        + evaluate_row((board & 0x00000000ffff0000ULL) >> 16)
-        + evaluate_row(board & 0x000000000000ffffULL);
+   return evaluate_row((board & 0xffff000000000000ull) >> 48)
+        + evaluate_row((board & 0x0000ffff00000000ull) >> 32)
+        + evaluate_row((board & 0x00000000ffff0000ull) >> 16)
+        + evaluate_row(board & 0x000000000000ffffull);
 }
 
 static float _evaluate_table(uint64_t board) {
-   return score_table[(board & 0xffff000000000000ULL) >> 48]
-        + score_table[(board & 0x0000ffff00000000ULL) >> 32]
-        + score_table[(board & 0x00000000ffff0000ULL) >> 16]
-        + score_table[board & 0x000000000000ffffULL];
+   return score_table[(board & 0xffff000000000000ull) >> 48]
+        + score_table[(board & 0x0000ffff00000000ull) >> 32]
+        + score_table[(board & 0x00000000ffff0000ull) >> 16]
+        + score_table[board & 0x000000000000ffffull];
 }
 
 static float evaluate(uint64_t board) {
@@ -123,17 +123,17 @@ void init() {
 }
 
 static inline uint64_t merge_left(uint64_t board) {
-   return ((uint64_t)merge_left_table[(board & 0xffff000000000000ULL) >> 48] << 48) |
-          ((uint64_t)merge_left_table[(board & 0x0000ffff00000000ULL) >> 32] << 32) |
-          ((uint64_t)merge_left_table[(board & 0x00000000ffff0000ULL) >> 16] << 16) |
-           (uint64_t)merge_left_table[ board & 0x000000000000ffffULL];
+   return ((uint64_t)merge_left_table[(board & 0xffff000000000000ull) >> 48] << 48) |
+          ((uint64_t)merge_left_table[(board & 0x0000ffff00000000ull) >> 32] << 32) |
+          ((uint64_t)merge_left_table[(board & 0x00000000ffff0000ull) >> 16] << 16) |
+           (uint64_t)merge_left_table[ board & 0x000000000000ffffull];
 }
 
 static inline uint64_t merge_right(uint64_t board) {
-   return ((uint64_t)merge_right_table[(board & 0xffff000000000000ULL) >> 48] << 48) |
-          ((uint64_t)merge_right_table[(board & 0x0000ffff00000000ULL) >> 32] << 32) |
-          ((uint64_t)merge_right_table[(board & 0x00000000ffff0000ULL) >> 16] << 16) |
-           (uint64_t)merge_right_table[ board & 0x000000000000ffffULL];
+   return ((uint64_t)merge_right_table[(board & 0xffff000000000000ull) >> 48] << 48) |
+          ((uint64_t)merge_right_table[(board & 0x0000ffff00000000ull) >> 32] << 32) |
+          ((uint64_t)merge_right_table[(board & 0x00000000ffff0000ull) >> 16] << 16) |
+           (uint64_t)merge_right_table[ board & 0x000000000000ffffull];
 }
 
 static inline uint64_t merge_up(uint64_t board) {
@@ -154,9 +154,9 @@ static inline uint64_t direction(uint64_t board, int move) {
 }
 
 static int count_free_tiles(uint64_t x) {
-   x |= (x >> 2) & 0x3333333333333333ULL;
+   x |= (x >> 2) & 0x3333333333333333ull;
    x |= (x >> 1);
-   x = ~x & 0x1111111111111111ULL;
+   x = ~x & 0x1111111111111111ull;
 
    x += x >> 32;
    x += x >> 16;
