@@ -153,17 +153,13 @@ static inline uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static int count_free_tiles(uint64_t x) {
-   x |= (x >> 2) & 0x3333333333333333ull;
-   x |= (x >> 1);
-   x = ~x & 0x1111111111111111ull;
+static int count_free_tiles(uint64_t &x) {
+   int empty = 0;
+   for(int i = 0; i < 64; i += 4) {
+      empty += (((x >> i) & 0xf) == 0);
+   }
 
-   x += x >> 32;
-   x += x >> 16;
-   x += x >> 8;
-   x += x >> 4;
-
-   return x & 0xf;
+   return empty;
 }
 
 static float search_min(uint64_t board, int depth, float p, map_t &table);
