@@ -1,4 +1,3 @@
-import numpy as np
 import random
 import ctypes
 import bitutils
