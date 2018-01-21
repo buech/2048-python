@@ -12,6 +12,13 @@ static uint16_t merge_left_table[0xffff];
 static uint16_t merge_right_table[0xffff];
 static float score_table[0xffff];
 
+struct map_entry_t{
+    uint8_t depth;
+    float score;
+};
+
+typedef std::map<uint64_t, map_entry_t> map_t;
+
 static inline uint64_t transpose(uint64_t x) {
    uint64_t t;
    t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ULL;
@@ -160,22 +167,32 @@ static int count_free_tiles(uint64_t x) {
    return x & 0xf;
 }
 
-static float search_min(uint64_t board, int depth, float p);
-static float search_max(uint64_t board, int depth, float p) {
+static float search_min(uint64_t board, int depth, float p, map_t &table);
+
+static float search_max(uint64_t board, int depth, float p, map_t &table) {
    float max_score = -INF;
 
    for(int move = 1; move < 5; ++move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth-1, p);
+      float score = search_min(new_board, depth-1, p, table);
       if(score > max_score) max_score = score;
    }
 
    return max_score;
 }
 
-static float search_min(uint64_t board, int depth, float p) {
+static float search_min(uint64_t board, int depth, float p, map_t &table) {
    if(depth == 0 || p < 0.0001f) return evaluate(board);
+
+   if(depth < 15) {
+      const map_t::iterator &i = table.find(board);
+      if(i != table.end()) {
+         map_entry_t entry = i->second;
+         if(entry.depth <= depth) return entry.score;
+      }
+   }
+   else std::cout << "Cache miss!" << std::endl;
 
    float score = 0;
    int free = count_free_tiles(board);
@@ -186,24 +203,33 @@ static float search_min(uint64_t board, int depth, float p) {
    uint64_t tmp = board;
    while(num) {
       if((tmp & 0xf) == 0) {
-         score += 0.9f * search_max(board | num, depth, 0.9f * p);
-         score += 0.1f * search_max(board | (num << 1), depth, 0.1f * p);
+         score += 0.9f * search_max(board | num, depth, 0.9f * p, table);
+         score += 0.1f * search_max(board | (num << 1), depth, 0.1f * p, table);
       }
       tmp >>= 4;
       num <<= 4;
    }
 
-   return score * oofree;
+   score *= oofree;
+
+   if(depth < 15) {
+      map_entry_t entry = {static_cast<uint8_t>(depth), score};
+      table[board] = entry;
+   }
+
+   return score;
 }
 
 int get_next_move(uint64_t board, int depth) {
+   map_t table;
+
    float max_score = -INF;
    int best_move = 0;
 
    for(int move = 1; move < 5; ++move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth, 1.0);
+      float score = search_min(new_board, depth, 1.0, table);
       if(score > max_score) {
          max_score = score;
          best_move = move;
