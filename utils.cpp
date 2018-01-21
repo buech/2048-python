@@ -42,7 +42,7 @@ static const float SUM_WEIGHT = 11.0;
 static const float SUM_POW = 3.5;
 
 static float evaluate_row(uint16_t x) {
-   unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
+   unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
 
    float mono = 0, sum = 0;
    int merges = 0, empty = 0;
@@ -92,7 +92,7 @@ static float evaluate(uint64_t board) {
 
 void init() {
    for(unsigned x = 0; x < 0xffff; ++x) {
-      unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
+      unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
 
       for(int i = 0; i < 3; ++i) {
          int j;
