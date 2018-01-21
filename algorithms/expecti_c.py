@@ -23,7 +23,7 @@ def getNextMoves(matrix):
     return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
     """
 
-    max_depth = 2#max(3, len(np.unique(matrix)) - 4)
+    max_depth = 3#max(3, len(np.unique(matrix)) - 2)
 
     matrix = [[0 if x==0 else int(log(x,2)) for x in r] for r in matrix]
 
