@@ -13,7 +13,7 @@ static uint16_t merge_right_table[0xffff];
 static float score_table[0xffff];
 
 struct map_entry_t{
-    uint8_t depth;
+    int depth;
     float score;
 };
 
@@ -184,14 +184,11 @@ static float search_max(uint64_t board, int depth, float p, map_t &table) {
 static float search_min(uint64_t board, int depth, float p, map_t &table) {
    if(depth == 0 || p < 0.0001f) return evaluate(board);
 
-   if(depth < 15) {
-      const map_t::iterator &i = table.find(board);
-      if(i != table.end()) {
-         map_entry_t entry = i->second;
-         if(entry.depth <= depth) return entry.score;
-      }
+   const map_t::iterator &i = table.find(board);
+   if(i != table.end()) {
+      map_entry_t entry = i->second;
+      if(entry.depth <= depth) return entry.score;
    }
-   else std::cout << "Cache miss!" << std::endl;
 
    float score = 0;
    int free = count_free_tiles(board);
@@ -211,10 +208,8 @@ static float search_min(uint64_t board, int depth, float p, map_t &table) {
 
    score *= oofree;
 
-   if(depth < 15) {
-      map_entry_t entry = {static_cast<uint8_t>(depth), score};
-      table[board] = entry;
-   }
+   map_entry_t entry = {depth, score};
+   table[board] = entry;
 
    return score;
 }
