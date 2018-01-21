@@ -34,10 +34,6 @@ static const float MERGES_WEIGHT = 2000.0;
 static const float SUM_WEIGHT = 11.0;
 static const float SUM_POW = 3.5;
 
-static inline float min(float a, float b) {
-   return a < b ? a:b;
-}
-
 static float evaluate_row(uint16_t x) {
    unsigned row[4] = {(x & 0xf000) >> 12, (x & 0x0f00) >> 8, (x & 0x00f0) >> 4, x & 0x000f};
 
