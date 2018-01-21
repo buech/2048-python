@@ -245,6 +245,7 @@ module eval
          end do
 
          score = score &
+               + 2*lost_penalty &
                + 2*empty_weight * count_free_tiles(grid) &
                - 2*sum_weight * sum_grid(grid)
 
