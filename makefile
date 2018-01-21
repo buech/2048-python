@@ -1,5 +1,5 @@
-CC = gcc-7
-CFLAGS = -march=native -Ofast -fPIC
+CXX = g++-7
+CXXFLAGS = -march=native -Ofast -fPIC
 FC = gfortran
 F2PYFLAGS = --arch=-march=native --opt=-Ofast
 MODNAME = utils_fortran
@@ -12,8 +12,8 @@ c: utils.so
 $(MODNAME).so: $(MODNAME).f90
 	f2py -c $(F2PYFLAGS) -m $(MODNAME) $<
 
-utils.so: utils_c.c
-	$(CC) $(CFLAGS) -shared -o $@ $<
+utils.so: utils.cpp
+	$(CXX) $(CXXFLAGS) -shared -o $@ $<
 
 test.x: $(MODNAME).f90
 	$(FC) -o $@ $<

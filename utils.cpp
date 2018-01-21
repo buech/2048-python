@@ -1,6 +1,10 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <math.h>
+#include <iostream>
+#include <cstdint>
+#include <cmath>
+#include <algorithm>
+#include <map>
+
+#include "utils.h"
 
 #define INF 1.0e8
 
@@ -62,7 +66,7 @@ static float evaluate_row(uint16_t x) {
       }
    }
 
-   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
+   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * std::min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
 }
 
 static float _evaluate(uint64_t board) {
@@ -212,3 +216,4 @@ int get_next_move(uint64_t board, int depth) {
 
    return best_move;
 }
+
