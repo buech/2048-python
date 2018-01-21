@@ -10,9 +10,9 @@ The minimax algorithm.
 
 lib = ctypes.CDLL('utils.so')
 
-print 'Initializing tables ...'
+#print 'Initializing tables ...'
 lib.init()
-print 'Done.'
+#print 'Done.'
 
 lib.get_next_move.argtypes = [ctypes.c_uint64, ctypes.c_int]
 lib.get_next_move.restype = ctypes.c_int
