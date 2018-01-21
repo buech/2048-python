@@ -72,21 +72,21 @@ static float evaluate_row(uint16_t x) {
    return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * std::min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
 }
 
-static float _evaluate(uint64_t board) {
+static inline float _evaluate(uint64_t board) {
    return evaluate_row((board & 0xffff000000000000ull) >> 48)
         + evaluate_row((board & 0x0000ffff00000000ull) >> 32)
         + evaluate_row((board & 0x00000000ffff0000ull) >> 16)
         + evaluate_row(board & 0x000000000000ffffull);
 }
 
-static float _evaluate_table(uint64_t board) {
+static inline float _evaluate_table(uint64_t board) {
    return score_table[(board & 0xffff000000000000ull) >> 48]
         + score_table[(board & 0x0000ffff00000000ull) >> 32]
         + score_table[(board & 0x00000000ffff0000ull) >> 16]
         + score_table[board & 0x000000000000ffffull];
 }
 
-static float evaluate(uint64_t board) {
+static inline float evaluate(uint64_t board) {
    return _evaluate_table(board) + _evaluate_table(transpose(board));
 }
 
