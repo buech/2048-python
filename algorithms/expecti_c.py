@@ -3,12 +3,13 @@ import random
 import ctypes
 import bitutils
 from math import log
+import os
 
 """
 The minimax algorithm.
 """
 
-lib = ctypes.CDLL('utils.so')
+lib = ctypes.CDLL(os.getcwd() + '/utils.so')
 
 #print 'Initializing tables ...'
 lib.init()
