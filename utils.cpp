@@ -151,6 +151,7 @@ static inline uint64_t direction(uint64_t board, int move) {
       case 2: return merge_down(board);
       case 3: return merge_right(board);
       case 4: return merge_left(board);
+      default: return board;
    }
 }
 
