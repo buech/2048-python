@@ -40,6 +40,7 @@ static const float MONO_POW = 4.0;
 static const float MERGES_WEIGHT = 2000.0;
 static const float SUM_WEIGHT = 11.0;
 static const float SUM_POW = 3.5;
+static const float P_CUTOFF = 0.005f;
 
 static float evaluate_row(uint16_t x) {
    unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
@@ -178,7 +179,7 @@ static float search_max(uint64_t board, int depth, float p, map_t &table) {
 }
 
 static float search_min(uint64_t board, int depth, float p, map_t &table) {
-   if(depth == 0 || p < 0.006f) return evaluate(board);
+   if(depth == 0 || p < P_CUTOFF) return evaluate(board);
 
    const map_t::iterator &i = table.find(board);
    if(i != table.end()) {
