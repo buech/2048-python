@@ -3,6 +3,7 @@ import ctypes
 import bitutils
 from math import log
 import os
+import numpy as np
 
 """
 The minimax algorithm.
