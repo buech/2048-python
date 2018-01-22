@@ -178,7 +178,7 @@ static float search_max(uint64_t board, int depth, float p, map_t &table) {
 }
 
 static float search_min(uint64_t board, int depth, float p, map_t &table) {
-   if(depth == 0 || p < 0.0001f) return evaluate(board);
+   if(depth == 0 || p < 0.006f) return evaluate(board);
 
    const map_t::iterator &i = table.find(board);
    if(i != table.end()) {
