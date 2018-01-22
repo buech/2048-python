@@ -35,7 +35,7 @@ def main(argv):
     parser.add_argument( "-d", '--debug',       default = False, action='store_true', help = 'Print in debug output' )
     parser.add_argument(       "--gui",         default = False, action="store_true", help = "Shows graphical interface with current status")
     parser.add_argument(       "--ascii",       default = False, action="store_true", help = "Prints current status to terminal")
-    parser.add_argument(       "--sleep",       default = 0,                          help = "Time to wait between moves [s].")
+    parser.add_argument(       "--sleep",       default = 0,  type=float,             help = "Time to wait between moves [s].")
     parser.add_argument( "-s", "--seed",        default = None,                       help = "Set seed to fixed value.")
     parser.add_argument( "-a", "--algorithm",   default = "example",                  help = "Which algorithms to run. multiple algorithms can be split by ','.")
     args = parser.parse_args(argv)
