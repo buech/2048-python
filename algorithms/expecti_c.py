@@ -3,7 +3,6 @@ import ctypes
 import bitutils
 from math import log
 import os
-import numpy as np
 
 """
 The minimax algorithm.
@@ -18,13 +17,18 @@ lib.init()
 lib.get_next_move.argtypes = [ctypes.c_uint64, ctypes.c_int]
 lib.get_next_move.restype = ctypes.c_int
 
+def unique(a):
+    u = []
+    [[u.append(e) if not e in u else 0 for e in r] for r in a]
+    return u
+
 def getNextMoves(matrix):
     """ alrogithm to determine which moves to do next.
 
     return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
     """
 
-    max_depth = max(3, len(np.unique(matrix)) - 2)
+    max_depth = max(3, len(unique(matrix)) - 2)
 
     matrix = [[0 if x==0 else int(log(x,2)) for x in r] for r in matrix]
 
