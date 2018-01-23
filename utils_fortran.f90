@@ -260,6 +260,7 @@ module expecti
    real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
+   real, parameter :: p_cutoff = 0.005
 
    contains
 
@@ -295,7 +296,7 @@ module expecti
          integer :: n, i, j, free
          real :: score, oofree
 
-         if(depth == 0 .or. prob < 0.0001) then
+         if(depth == 0 .or. prob < p_cutoff) then
             score = evaluate(grid)
             return
          end if
