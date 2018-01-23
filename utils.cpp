@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
-#include <map>
+#include <unordered_map>
 
 #include "utils.h"
 
@@ -17,7 +17,7 @@ struct map_entry_t{
     float score;
 };
 
-typedef std::map<uint64_t, map_entry_t> map_t;
+typedef std::unordered_map<uint64_t, map_entry_t> map_t;
 
 static inline uint64_t transpose(uint64_t x) {
    uint64_t t;
