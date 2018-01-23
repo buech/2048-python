@@ -185,7 +185,7 @@ static float search_min(uint64_t board, int depth, float p, map_t &table) {
    const map_t::iterator &i = table.find(board);
    if(i != table.end()) {
       map_entry_t entry = i->second;
-      if(entry.depth <= depth) return entry.score;
+      if(entry.depth >= depth) return entry.score;
    }
 
    float score = 0;
