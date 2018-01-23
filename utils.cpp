@@ -40,7 +40,7 @@ static const float MONO_POW = 4.0;
 static const float MERGES_WEIGHT = 2000.0;
 static const float SUM_WEIGHT = 11.0;
 static const float SUM_POW = 3.5;
-static const float P_CUTOFF = 0.005f;
+static const float P_CUTOFF = 0.005;
 
 static float evaluate_row(uint16_t x) {
    unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
@@ -197,8 +197,8 @@ static float search_min(uint64_t board, int depth, float p, map_t &table) {
    uint64_t tmp = board;
    while(num) {
       if((tmp & 0xf) == 0) {
-         score += 0.9f * search_max(board | num, depth, 0.9f * p, table);
-         score += 0.1f * search_max(board | (num << 1), depth, 0.1f * p, table);
+         score += 0.9 * search_max(board | num, depth, 0.9 * p, table);
+         score += 0.1 * search_max(board | (num << 1), depth, 0.1 * p, table);
       }
       tmp >>= 4;
       num <<= 4;
