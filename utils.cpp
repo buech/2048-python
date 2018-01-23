@@ -155,7 +155,7 @@ static inline uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static inline int count_free_tiles(uint64_t &x) {
+static inline int count_free_tiles(const uint64_t &x) {
    int empty = 0;
    for(int i = 0; i < 64; i += 4) {
       empty += (((x >> i) & 0xf) == 0);
