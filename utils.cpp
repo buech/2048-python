@@ -10,11 +10,11 @@
 
 static uint16_t merge_left_table[0xffff];
 static uint16_t merge_right_table[0xffff];
-static float score_table[0xffff];
+static double score_table[0xffff];
 
 struct map_entry_t{
     int depth;
-    float score;
+    double score;
 };
 
 typedef std::unordered_map<uint64_t, map_entry_t> map_t;
@@ -33,19 +33,19 @@ static inline uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
 }
 
-static const float LOST_PENALTY = 200000.0;
-static const float EMPTY_WEIGHT = 270.0;
-static const float MONO_WEIGHT = 47.0;
-static const float MONO_POW = 4.0;
-static const float MERGES_WEIGHT = 2000.0;
-static const float SUM_WEIGHT = 11.0;
-static const float SUM_POW = 3.5;
-static const float P_CUTOFF = 0.005;
+static const double LOST_PENALTY = 200000.0;
+static const double EMPTY_WEIGHT = 270.0;
+static const double MONO_WEIGHT = 47.0;
+static const double MONO_POW = 4.0;
+static const double MERGES_WEIGHT = 2000.0;
+static const double SUM_WEIGHT = 11.0;
+static const double SUM_POW = 3.5;
+static const double P_CUTOFF = 0.005;
 
-static float evaluate_row(uint16_t x) {
+static double evaluate_row(uint16_t x) {
    unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
 
-   float mono = 0, sum = 0;
+   double mono = 0, sum = 0;
    int merges = 0, empty = 0;
 
    for(int i = 0; i < 4; ++i) {
@@ -55,7 +55,7 @@ static float evaluate_row(uint16_t x) {
       else empty++;
    }
 
-   float left = 0, right = 0;
+   double left = 0, right = 0;
    for(int i = 0; i < 3; ++i) {
       if(row[i] > row[i+1]) {
          left += pow(row[i], MONO_POW) - pow(row[i+1], MONO_POW);
@@ -73,21 +73,21 @@ static float evaluate_row(uint16_t x) {
    return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * std::min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
 }
 
-static inline float _evaluate(uint64_t board) {
+static inline double _evaluate(uint64_t board) {
    return evaluate_row((board & 0xffff000000000000ull) >> 48)
         + evaluate_row((board & 0x0000ffff00000000ull) >> 32)
         + evaluate_row((board & 0x00000000ffff0000ull) >> 16)
         + evaluate_row(board & 0x000000000000ffffull);
 }
 
-static inline float _evaluate_table(uint64_t board) {
+static inline double _evaluate_table(uint64_t board) {
    return score_table[(board & 0xffff000000000000ull) >> 48]
         + score_table[(board & 0x0000ffff00000000ull) >> 32]
         + score_table[(board & 0x00000000ffff0000ull) >> 16]
         + score_table[board & 0x000000000000ffffull];
 }
 
-static inline float evaluate(uint64_t board) {
+static inline double evaluate(uint64_t board) {
    return _evaluate_table(board) + _evaluate_table(transpose(board));
 }
 
@@ -164,22 +164,22 @@ static inline int count_free_tiles(const uint64_t &x) {
    return empty;
 }
 
-static float search_min(uint64_t board, int depth, int curdepth, float p, map_t &table);
+static double search_min(uint64_t board, int depth, int curdepth, double p, map_t &table);
 
-static float search_max(uint64_t board, int depth, int curdepth, float p, map_t &table) {
-   float max_score = -INF;
+static double search_max(uint64_t board, int depth, int curdepth, double p, map_t &table) {
+   double max_score = -INF;
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth-1, curdepth+1, p, table);
+      double score = search_min(new_board, depth-1, curdepth+1, p, table);
       if(score > max_score) max_score = score;
    }
 
    return max_score;
 }
 
-static float search_min(uint64_t board, int depth, int curdepth, float p, map_t &table) {
+static double search_min(uint64_t board, int depth, int curdepth, double p, map_t &table) {
    if(depth == 0 || p < P_CUTOFF) return evaluate(board);
 
    const map_t::iterator &i = table.find(board);
@@ -190,11 +190,11 @@ static float search_min(uint64_t board, int depth, int curdepth, float p, map_t 
 
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
-   float oofree = 1.0 / free;
+   double oofree = 1.0 / free;
    p *= oofree;
    uint64_t num = 0x1;
    uint64_t tmp = board;
-   float score = 0;
+   double score = 0;
    while(num) {
       if((tmp & 0xf) == 0) {
          score += 0.9 * search_max(board | num, depth, curdepth, 0.9 * p, table);
@@ -215,13 +215,13 @@ static float search_min(uint64_t board, int depth, int curdepth, float p, map_t 
 int get_next_move(uint64_t board, int depth) {
    map_t table;
 
-   float max_score = -INF;
+   double max_score = -INF;
    int best_move = 0;
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth, 1, 1.0, table);
+      double score = search_min(new_board, depth, 1, 1.0, table);
       if(score > max_score) {
          max_score = score;
          best_move = move;
