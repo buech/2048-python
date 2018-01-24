@@ -169,7 +169,7 @@ static float search_min(uint64_t board, int depth, int curdepth, float p, map_t 
 static float search_max(uint64_t board, int depth, int curdepth, float p, map_t &table) {
    float max_score = -INF;
 
-   for(int move = 1; move < 5; ++move) {
+   for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
       float score = search_min(new_board, depth-1, curdepth+1, p, table);
@@ -218,7 +218,7 @@ int get_next_move(uint64_t board, int depth) {
    float max_score = -INF;
    int best_move = 0;
 
-   for(int move = 1; move < 5; ++move) {
+   for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
       float score = search_min(new_board, depth, 1, 1.0, table);
