@@ -153,7 +153,48 @@ module eval
    real, parameter :: sum_weight = 11.0
    real, parameter :: sum_pow = 3.5
 
+   real, dimension(0:65535) :: score_table
+
    contains
+
+      function encode_row(row) result(x)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: x
+
+         x = 0
+         x = ior(x, ishft(row(1), 12))
+         x = ior(x, ishft(row(2),  8))
+         x = ior(x, ishft(row(3),  4))
+         x = ior(x,       row(4)     )
+
+      end function
+
+      function decode_row(x) result(row)
+         implicit none
+         integer, intent(in) :: x
+         integer, dimension(4) :: row
+
+         row(1) = ishft(iand(x, 61440), -12) ! 61440 = z'f000'
+         row(2) = ishft(iand(x,  3840),  -8) !  3830 = z'0f00'
+         row(3) = ishft(iand(x,   240),  -4) !   240 = z'00f0'
+         row(4) =       iand(x,    15)       !    15 = z'000f'
+
+      end function
+
+      subroutine init()
+         implicit none
+         integer, dimension(4) :: row
+         integer :: x
+
+         x = 0
+         do while(x < 65536)
+            row = decode_row(x)
+            score_table(x) = evaluate_row(row)
+            x = x+1
+         end do
+
+      end subroutine
 
       function count_free_tiles(grid) result(n)
          integer, dimension(4,4), intent(in) :: grid
@@ -180,6 +221,33 @@ module eval
             do j=1,4
                s = s + grid(i,j)**sum_pow
             end do
+         end do
+
+      end function
+
+      function count_free_row(row) result(n)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: i, n
+
+         n = 0
+         do i=1,4
+            if(row(i) == 0) then
+               n = n + 1
+            end if
+         end do
+
+      end function
+
+      function sum_row(row) result(s)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: i
+         real :: s
+
+         s = 0
+         do i=1,4
+            s = s + row(i)**sum_pow
          end do
 
       end function
@@ -222,6 +290,28 @@ module eval
 
       end function
 
+      function evaluate_row(row) result(score)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         real :: score
+
+         score = lost_penalty &
+               + empty_weight * count_free_row(row) &
+               - sum_weight * sum_row(row) &
+               + merges_weight * merges(row) &
+               - mono_weight * monotonicity(row)
+
+      end function
+
+      function evaluate_row_table(row) result(score)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         real :: score
+
+         score = score_table(encode_row(row))
+
+      end function
+
       function evaluate(grid) result(score)
          integer, dimension(4,4), intent(in) :: grid
          real :: score
@@ -233,14 +323,9 @@ module eval
             row = grid(i,:)
             col = grid(:,i)
             score = score &
-                  + merges_weight * (merges(row) + merges(col)) &
-                  - mono_weight * (monotonicity(row) + monotonicity(col))
+                  + evaluate_row_table(row) &
+                  + evaluate_row_table(col)
          end do
-
-         score = score &
-               + 2*lost_penalty &
-               + 2*empty_weight * count_free_tiles(grid) &
-               - 2*sum_weight * sum_grid(grid)
 
       end function
 
@@ -445,11 +530,13 @@ end module
 
 program test
    use utils
+   use eval
    use expecti
 
    implicit none
 
    integer, dimension(4,4) :: grid, merged
+   integer :: x = 65535 ! 0xffff
 
    grid = reshape((/0, 0, 1, 1,&
                     0, 1, 0, 2,&
@@ -485,5 +572,16 @@ program test
    print *
 
    print *, get_next_move(grid, 1)
+   print *
+
+   print '(4 z4)', encode_row( (/15,15,15,15/) )
+   print '(4 i3)', decode_row(x)
+   print *
+
+   print *, "Initializing table..."
+   call init()
+   print *, "Done!"
+   print *, evaluate_row( (/15,15,15,15/) )
+   print *, evaluate_row_table( (/15,15,15,15/) )
 
 end program test

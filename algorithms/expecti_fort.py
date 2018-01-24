@@ -2,6 +2,8 @@ import utils_fortran
 import numpy as np
 import random
 
+utils_fortran.eval.init()
+
 def getNextMoves(matrix):
     max_depth = 2
 
