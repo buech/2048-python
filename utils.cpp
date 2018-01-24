@@ -164,28 +164,28 @@ static inline int count_free_tiles(const uint64_t &x) {
    return empty;
 }
 
-static float search_min(uint64_t board, int depth, float p, map_t &table);
+static float search_min(uint64_t board, int depth, int curdepth, float p, map_t &table);
 
-static float search_max(uint64_t board, int depth, float p, map_t &table) {
+static float search_max(uint64_t board, int depth, int curdepth, float p, map_t &table) {
    float max_score = -INF;
 
    for(int move = 1; move < 5; ++move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth-1, p, table);
+      float score = search_min(new_board, depth-1, curdepth+1, p, table);
       if(score > max_score) max_score = score;
    }
 
    return max_score;
 }
 
-static float search_min(uint64_t board, int depth, float p, map_t &table) {
+static float search_min(uint64_t board, int depth, int curdepth, float p, map_t &table) {
    if(depth == 0 || p < P_CUTOFF) return evaluate(board);
 
    const map_t::iterator &i = table.find(board);
    if(i != table.end()) {
       map_entry_t entry = i->second;
-      if(entry.depth >= depth) return entry.score;
+      if(entry.depth >= curdepth) return entry.score;
    }
 
    float score = 0;
@@ -197,8 +197,8 @@ static float search_min(uint64_t board, int depth, float p, map_t &table) {
    uint64_t tmp = board;
    while(num) {
       if((tmp & 0xf) == 0) {
-         score += 0.9 * search_max(board | num, depth, 0.9 * p, table);
-         score += 0.1 * search_max(board | (num << 1), depth, 0.1 * p, table);
+         score += 0.9 * search_max(board | num, depth, curdepth, 0.9 * p, table);
+         score += 0.1 * search_max(board | (num << 1), depth, curdepth, 0.1 * p, table);
       }
       tmp >>= 4;
       num <<= 4;
@@ -206,7 +206,7 @@ static float search_min(uint64_t board, int depth, float p, map_t &table) {
 
    score *= oofree;
 
-   map_entry_t entry = {depth, score};
+   map_entry_t entry = {curdepth, score};
    table[board] = entry;
 
    return score;
@@ -221,7 +221,7 @@ int get_next_move(uint64_t board, int depth) {
    for(int move = 1; move < 5; ++move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      float score = search_min(new_board, depth, 1.0, table);
+      float score = search_min(new_board, depth, 1, 1.0, table);
       if(score > max_score) {
          max_score = score;
          best_move = move;
