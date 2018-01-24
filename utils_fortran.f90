@@ -133,12 +133,16 @@ module utils
          select case (move)
             case (1)
                call merge_up(merged)
+               return
             case (2)
                call merge_down(merged)
+               return
             case (3)
                call merge_right(merged)
+               return
             case (4)
                call merge_left(merged)
+               return
          end select
 
       end function
