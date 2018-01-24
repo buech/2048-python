@@ -18,6 +18,6 @@ test.x: $(MODNAME).f90
 	$(FC) -o $@ $<
 
 clean:
-	rm -f $(MODNAME).so $(MODNAME).mod test.x utils.so
+	rm -f $(MODNAME).so *.mod test.x utils.so
 
 .PHONY: clean
