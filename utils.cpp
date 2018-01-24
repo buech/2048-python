@@ -188,13 +188,13 @@ static float search_min(uint64_t board, int depth, int curdepth, float p, map_t 
       if(entry.depth >= curdepth) return entry.score;
    }
 
-   float score = 0;
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
    float oofree = 1.0 / free;
    p *= oofree;
    uint64_t num = 0x1;
    uint64_t tmp = board;
+   float score = 0;
    while(num) {
       if((tmp & 0xf) == 0) {
          score += 0.9 * search_max(board | num, depth, curdepth, 0.9 * p, table);
