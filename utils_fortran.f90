@@ -1,7 +1,213 @@
 module utils
-   implicit none
+
+   integer, dimension(0:65535) :: left_table
+   real, dimension(0:65535) :: score_table
+
+   real, parameter :: lost_penalty = 200000.0
+   real, parameter :: empty_weight = 270.0
+   real, parameter :: mono_weight = 47.0
+   real, parameter :: mono_pow = 4.0
+   real, parameter :: merges_weight = 2000.0
+   real, parameter :: sum_weight = 11.0
+   real, parameter :: sum_pow = 3.5
 
    contains
+
+      function encode_row(row) result(x)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: x
+
+         x = 0
+         x = ior(x, ishft(row(1), 12))
+         x = ior(x, ishft(row(2),  8))
+         x = ior(x, ishft(row(3),  4))
+         x = ior(x,       row(4)     )
+
+      end function
+
+      function decode_row(x) result(row)
+         implicit none
+         integer, intent(in) :: x
+         integer, dimension(4) :: row
+
+         row(1) = ishft(iand(x, 61440), -12) ! 61440 = z'f000'
+         row(2) = ishft(iand(x,  3840),  -8) !  3830 = z'0f00'
+         row(3) = ishft(iand(x,   240),  -4) !   240 = z'00f0'
+         row(4) =       iand(x,    15)       !    15 = z'000f'
+
+      end function
+
+      function count_free_tiles(grid) result(n)
+         implicit none
+         integer, dimension(4,4), intent(in) :: grid
+         integer :: i, j, n
+
+         n = 0
+         do i=1,4
+            do j=1,4
+               if(grid(i,j) == 0) then
+                  n = n + 1
+               end if
+            end do
+         end do
+
+      end function
+
+      function sum_grid(grid) result(s)
+         implicit none
+         integer, dimension(4,4), intent(in) :: grid
+         integer :: i, j
+         real :: s
+
+         s = 0
+         do i=1,4
+            do j=1,4
+               s = s + grid(i,j)**sum_pow
+            end do
+         end do
+
+      end function
+
+      function count_free_row(row) result(n)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: i, n
+
+         n = 0
+         do i=1,4
+            if(row(i) == 0) then
+               n = n + 1
+            end if
+         end do
+
+      end function
+
+      function sum_row(row) result(s)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: i
+         real :: s
+
+         s = 0
+         do i=1,4
+            s = s + row(i)**sum_pow
+         end do
+
+      end function
+
+      function merges(row) result(m)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         integer :: m, i, k
+
+         m = 0
+         do i=1,3
+            if(row(i) /= 0) then
+               k = i+1
+               do while(row(k) == 0 .and. k < 4)
+                  k = k+1
+               end do
+               if(row(k) == row(i)) then
+                  m = m+1
+               end if
+            end if
+         end do
+
+      end function
+
+      function monotonicity(row) result(score)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         real :: score, left, right
+         integer :: i
+
+         left = 0.0
+         right = 0.0
+         do i=1,3
+            if(row(i) > row(i+1)) then
+               left = left + (row(i)**mono_pow - row(i+1)**mono_pow)
+            else
+               right = right + (row(i+1)**mono_pow - row(i)**mono_pow)
+            end if
+         end do
+
+         score = min(left, right)
+
+      end function
+
+      function evaluate_row(row) result(score)
+         implicit none
+         integer, dimension(4), intent(in) :: row
+         real :: score
+
+         score = lost_penalty &
+               + empty_weight * count_free_row(row) &
+               - sum_weight * sum_row(row) &
+               + merges_weight * merges(row) &
+               - mono_weight * monotonicity(row)
+
+      end function
+
+      subroutine shift_row(row)
+         implicit none
+         integer, dimension(4) :: row
+
+         integer :: k,j
+
+         do j=1,3
+            if(row(j) == 0) then
+               do k=j+1,4
+                  if(row(k) /= 0) then
+                     row(j) = row(k)
+                     row(k) = 0
+                     exit
+                  end if
+               end do
+            end if
+         end do
+
+      end subroutine
+
+      subroutine merge_row(row)
+         implicit none
+         integer, dimension(4) :: row
+
+         integer :: j, k
+
+         do j=1,3
+            if(row(j) /= 0) then
+               k = j+1
+               do while(row(k) == 0 .and. k < 4)
+                  k = k+1
+               end do
+               if(row(k) == row(j)) then
+                  row(j) = row(j) + 1
+                  row(k) = 0
+               end if
+            end if
+         end do
+
+         call shift_row(row)
+
+      end subroutine
+
+      subroutine init_tables()
+         implicit none
+         integer, dimension(4) :: row, merged
+         integer :: x
+
+         x = 0
+         do while(x < 65536)
+            row = decode_row(x)
+            merged = row
+            call merge_row(merged)
+            left_table(x) = encode_row(merged)
+            score_table(x) = evaluate_row(row)
+            x = x+1
+         end do
+
+      end subroutine
 
       subroutine shift_left(grid)
          integer, dimension(4,4) :: grid
@@ -90,6 +296,17 @@ module utils
 
       end subroutine
 
+      subroutine merge_left_table(grid)
+         implicit none
+         integer, dimension(4,4) :: grid
+         integer :: i
+
+         do i=1,4
+            grid(i,:) = decode_row(left_table(encode_row(grid(i,:))))
+         end do
+
+      end subroutine
+
       subroutine merge_right(grid)
          integer, dimension(4,4) :: grid
 
@@ -143,165 +360,9 @@ module utils
 end module utils
 
 module eval
-   implicit none
-
-   real, parameter :: lost_penalty = 200000.0
-   real, parameter :: empty_weight = 270.0
-   real, parameter :: mono_weight = 47.0
-   real, parameter :: mono_pow = 4.0
-   real, parameter :: merges_weight = 1400.0
-   real, parameter :: sum_weight = 11.0
-   real, parameter :: sum_pow = 3.5
-
-   real, dimension(0:65535) :: score_table
+   use utils
 
    contains
-
-      function encode_row(row) result(x)
-         implicit none
-         integer, dimension(4), intent(in) :: row
-         integer :: x
-
-         x = 0
-         x = ior(x, ishft(row(1), 12))
-         x = ior(x, ishft(row(2),  8))
-         x = ior(x, ishft(row(3),  4))
-         x = ior(x,       row(4)     )
-
-      end function
-
-      function decode_row(x) result(row)
-         implicit none
-         integer, intent(in) :: x
-         integer, dimension(4) :: row
-
-         row(1) = ishft(iand(x, 61440), -12) ! 61440 = z'f000'
-         row(2) = ishft(iand(x,  3840),  -8) !  3830 = z'0f00'
-         row(3) = ishft(iand(x,   240),  -4) !   240 = z'00f0'
-         row(4) =       iand(x,    15)       !    15 = z'000f'
-
-      end function
-
-      subroutine init()
-         implicit none
-         integer, dimension(4) :: row
-         integer :: x
-
-         x = 0
-         do while(x < 65536)
-            row = decode_row(x)
-            score_table(x) = evaluate_row(row)
-            x = x+1
-         end do
-
-      end subroutine
-
-      function count_free_tiles(grid) result(n)
-         integer, dimension(4,4), intent(in) :: grid
-         integer :: i, j, n
-
-         n = 0
-         do i=1,4
-            do j=1,4
-               if(grid(i,j) == 0) then
-                  n = n + 1
-               end if
-            end do
-         end do
-
-      end function
-
-      function sum_grid(grid) result(s)
-         integer, dimension(4,4), intent(in) :: grid
-         integer :: i, j
-         real :: s
-
-         s = 0
-         do i=1,4
-            do j=1,4
-               s = s + grid(i,j)**sum_pow
-            end do
-         end do
-
-      end function
-
-      function count_free_row(row) result(n)
-         implicit none
-         integer, dimension(4), intent(in) :: row
-         integer :: i, n
-
-         n = 0
-         do i=1,4
-            if(row(i) == 0) then
-               n = n + 1
-            end if
-         end do
-
-      end function
-
-      function sum_row(row) result(s)
-         implicit none
-         integer, dimension(4), intent(in) :: row
-         integer :: i
-         real :: s
-
-         s = 0
-         do i=1,4
-            s = s + row(i)**sum_pow
-         end do
-
-      end function
-
-      function merges(row) result(m)
-         integer, dimension(4), intent(in) :: row
-         integer :: m, i, k
-
-         m = 0
-         do i=1,3
-            if(row(i) /= 0) then
-               k = i+1
-               do while(row(k) == 0 .and. k < 4)
-                  k = k+1
-               end do
-               if(row(k) == row(i)) then
-                  m = m+1
-               end if
-            end if
-         end do
-
-      end function
-
-      function monotonicity(row) result(score)
-         integer, dimension(4), intent(in) :: row
-         real :: score, left, right
-         integer :: i
-
-         left = 0.0
-         right = 0.0
-         do i=1,3
-            if(row(i) > row(i+1)) then
-               left = left + (row(i)**mono_pow - row(i+1)**mono_pow)
-            else
-               right = right + (row(i+1)**mono_pow - row(i)**mono_pow)
-            end if
-         end do
-
-         score = min(left, right)
-
-      end function
-
-      function evaluate_row(row) result(score)
-         implicit none
-         integer, dimension(4), intent(in) :: row
-         real :: score
-
-         score = lost_penalty &
-               + empty_weight * count_free_row(row) &
-               - sum_weight * sum_row(row) &
-               + merges_weight * merges(row) &
-               - mono_weight * monotonicity(row)
-
-      end function
 
       function evaluate_row_table(row) result(score)
          implicit none
@@ -543,6 +604,12 @@ program test
                     2, 2, 3, 3,&
                     2, 3, 4, 0/), (/4, 4/))
 
+
+   print *, "Initializing tables ..."
+   call init_tables()
+   print *, "Done!"
+   print *
+
    print *, 'Original'
    print '(4 i3)', grid(:,:)
    print *
@@ -578,9 +645,6 @@ program test
    print '(4 i3)', decode_row(x)
    print *
 
-   print *, "Initializing table..."
-   call init()
-   print *, "Done!"
    print *, evaluate_row( (/15,15,15,15/) )
    print *, evaluate_row_table( (/15,15,15,15/) )
 
