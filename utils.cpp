@@ -239,9 +239,10 @@ int main() {
 
    uint64_t board = 0x0011010222332340ull;
 
-   int best_move = get_next_move(board, 10);
-
-   std::cout << best_move << std::endl;
+   for(int i = 0; i < 10; ++i) {
+      int best_move = get_next_move(board << 4*i, 10);
+      std::cout << best_move << std::endl;
+   }
    return 0;
 }
 
