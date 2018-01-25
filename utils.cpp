@@ -187,11 +187,13 @@ static float search_max(uint64_t board, int max_depth, int depth, float p, cache
 static float search_min(uint64_t board, int max_depth, int depth, float p, cache_t &cache) {
    if(max_depth == 0 || p < P_CUTOFF) return evaluate(board);
 
+   /*
    const cache_t::iterator i = cache.find(board);
    if(i != cache.end()) {
       cache_entry_t entry = i->second;
       if(entry.depth >= depth) return entry.score;
    }
+   */
 
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
@@ -210,8 +212,10 @@ static float search_min(uint64_t board, int max_depth, int depth, float p, cache
 
    score /= free;
 
+   /*
    cache_entry_t entry = {depth, score};
    cache[board] = entry;
+   */
 
    return score;
 }

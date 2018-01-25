@@ -4,8 +4,13 @@ import random
 
 utils_fortran.utils.init_tables()
 
+def unique(a):
+    u = []
+    [[u.append(e) if not e in u else 0 for e in r] for r in a]
+    return u
+
 def getNextMoves(matrix):
-    max_depth = 2
+    max_depth = 2#max(3, len(unique(matrix)) - 2)
 
     mat_np = np.array(matrix)
     mat_log = np.log2(mat_np, where=mat_np!=0)

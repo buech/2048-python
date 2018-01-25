@@ -17,7 +17,7 @@ def unique(a):
     return u
 
 def getNextMoves(matrix):
-    max_depth = max(3, len(unique(matrix)) - 2)
+    max_depth = 2#max(3, len(unique(matrix)) - 2)
 
     matrix = [[0 if x==0 else int(log(x,2)) for x in r] for r in matrix]
 
