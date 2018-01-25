@@ -117,7 +117,7 @@ void init() {
             i--;
          }
          else if(row[i] == row[j]) {
-            if(row[i] != 0xf) row[i]++;
+            if(row[i] != 15) row[i]++; // 32k + 32k = 32k
             row[j] = 0;
          }
       }
