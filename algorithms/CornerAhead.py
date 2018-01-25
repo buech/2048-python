@@ -1,13 +1,15 @@
-# todo: wrong decision in 830th iteration (seed:53)
-# reason: algorithm thinks it can do a good move later on,
-# but that might not work, when new numbers occur in other places
 import logic
 import random
 import tabulate
 import math
 
 """
-Try to gather cells in lower left corner.
+ - Try to gather cells in lower left corner.
+ - Think a number of times ahead, depending on how many steps have 
+already been taken
+ - Criterion, which decides direction: normal Score + bonus for tiles 
+with zero + bonus for merges in left-hand column (the more the earlier
+they happen)
 """
 
 class Mufflons:
@@ -26,8 +28,6 @@ class Mufflons:
         self.matVector     = [] 
         for i in range(n): self.dirVector.append("empty")
         for i in range(n+1): self.matVector.append(matrix)
-        #print "n= {} ".format(n)
-        #print "dirVector = {}".format(self.dirVector)
         self.nmax       = n
 
     def markTiles(self, mat):
