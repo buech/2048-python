@@ -24,7 +24,7 @@ static uint64_t transpose(uint64_t x) {
    uint64_t tmp;
    tmp = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ull;
    x ^= tmp ^ (tmp << 12);
-   t = (x ^ (x >> 24)) & 0x00000000ff00ff00ull;
+   tmp = (x ^ (x >> 24)) & 0x00000000ff00ff00ull;
    x ^= tmp ^ (tmp << 24);
 
    return x;
