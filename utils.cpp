@@ -20,7 +20,7 @@ struct map_entry_t{
 
 typedef std::unordered_map<uint64_t, map_entry_t> map_t;
 
-static inline uint64_t transpose(uint64_t x) {
+static uint64_t transpose(uint64_t x) {
    uint64_t t;
    t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ull;
    x ^= t ^ (t << 12);
@@ -154,7 +154,7 @@ static inline uint64_t merge_down(uint64_t board) {
    return transpose(merge_right(transpose(board)));
 }
 
-static inline uint64_t direction(uint64_t board, int move) {
+static uint64_t direction(uint64_t board, int move) {
    switch(move) {
       case 1: return merge_up(board);
       case 2: return merge_down(board);
@@ -164,7 +164,7 @@ static inline uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static inline int count_free_tiles(const uint64_t &x) {
+static int count_free_tiles(const uint64_t &x) {
    int empty = 0;
    for(int i = 0; i < 64; i += 4) {
       empty += (((x >> i) & 0xf) == 0);
