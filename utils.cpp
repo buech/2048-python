@@ -123,9 +123,9 @@ void init() {
       }
 
       uint16_t merged = (row[0] << 12) | (row[1] << 8) | (row[2] << 4) | row[3];
-      uint16_t x_rev = reverse_row(x);
-
       merge_left_table[x] = merged;
+
+      uint16_t x_rev = reverse_row(x);
       merge_right_table[x_rev] = reverse_row(merged);
 
       score_table[x] = evaluate_row(x);
