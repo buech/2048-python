@@ -8,6 +8,7 @@
 
 #define INF 1.0e8
 
+static const uint64_t MASK = 0xffff;
 static uint16_t merge_left_table[0xffff];
 static uint16_t merge_right_table[0xffff];
 static double score_table[0xffff];
@@ -43,7 +44,11 @@ static const double SUM_POW = 3.5;
 static const double P_CUTOFF = 0.005;
 
 static double evaluate_row(uint16_t x) {
-   unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
+   uint16_t mask = 0xf;
+   int row[4] = {(x >> 12) & mask,
+                 (x >>  8) & mask,
+                 (x >>  4) & mask,
+                  x        & mask};
 
    double mono = 0, sum = 0;
    int merges = 0, empty = 0;
@@ -74,17 +79,17 @@ static double evaluate_row(uint16_t x) {
 }
 
 static inline double _evaluate(uint64_t board) {
-   return evaluate_row((board & 0xffff000000000000ull) >> 48)
-        + evaluate_row((board & 0x0000ffff00000000ull) >> 32)
-        + evaluate_row((board & 0x00000000ffff0000ull) >> 16)
-        + evaluate_row(board & 0x000000000000ffffull);
+   return evaluate_row((board >> 48) & MASK)
+        + evaluate_row((board >> 32) & MASK)
+        + evaluate_row((board >> 16) & MASK)
+        + evaluate_row( board        & MASK);
 }
 
 static inline double _evaluate_table(uint64_t board) {
-   return score_table[(board & 0xffff000000000000ull) >> 48]
-        + score_table[(board & 0x0000ffff00000000ull) >> 32]
-        + score_table[(board & 0x00000000ffff0000ull) >> 16]
-        + score_table[board & 0x000000000000ffffull];
+   return score_table[(board >> 48) & MASK]
+        + score_table[(board >> 32) & MASK]
+        + score_table[(board >> 16) & MASK]
+        + score_table[ board        & MASK];
 }
 
 static inline double evaluate(uint64_t board) {
@@ -92,8 +97,12 @@ static inline double evaluate(uint64_t board) {
 }
 
 void init() {
-   for(unsigned x = 0; x < 0xffff; ++x) {
-      unsigned row[4] = {(x & 0xf000u) >> 12, (x & 0x0f00u) >> 8, (x & 0x00f0u) >> 4, x & 0x000fu};
+   for(uint16_t x = 0; x < 0xffff; ++x) {
+      uint16_t mask = 0xf;
+      int row[4] = {(x >> 12) & mask,
+                    (x >>  8) & mask,
+                    (x >>  4) & mask,
+                     x        & mask};
 
       for(int i = 0; i < 3; ++i) {
          int j;
@@ -114,7 +123,7 @@ void init() {
       }
 
       uint16_t merged = (row[0] << 12) | (row[1] << 8) | (row[2] << 4) | row[3];
-      unsigned x_rev = reverse_row(x);
+      uint16_t x_rev = reverse_row(x);
 
       merge_left_table[x] = merged;
       merge_right_table[x_rev] = reverse_row(merged);
@@ -124,17 +133,17 @@ void init() {
 }
 
 static inline uint64_t merge_left(uint64_t board) {
-   return ((uint64_t)merge_left_table[(board & 0xffff000000000000ull) >> 48] << 48) |
-          ((uint64_t)merge_left_table[(board & 0x0000ffff00000000ull) >> 32] << 32) |
-          ((uint64_t)merge_left_table[(board & 0x00000000ffff0000ull) >> 16] << 16) |
-           (uint64_t)merge_left_table[ board & 0x000000000000ffffull];
+   return ((uint64_t)merge_left_table[(board >> 48) & MASK] << 48) |
+          ((uint64_t)merge_left_table[(board >> 32) & MASK] << 32) |
+          ((uint64_t)merge_left_table[(board >> 16) & MASK] << 16) |
+           (uint64_t)merge_left_table[ board        & MASK];
 }
 
 static inline uint64_t merge_right(uint64_t board) {
-   return ((uint64_t)merge_right_table[(board & 0xffff000000000000ull) >> 48] << 48) |
-          ((uint64_t)merge_right_table[(board & 0x0000ffff00000000ull) >> 32] << 32) |
-          ((uint64_t)merge_right_table[(board & 0x00000000ffff0000ull) >> 16] << 16) |
-           (uint64_t)merge_right_table[ board & 0x000000000000ffffull];
+   return ((uint64_t)merge_right_table[(board >> 48) & MASK] << 48) |
+          ((uint64_t)merge_right_table[(board >> 32) & MASK] << 32) |
+          ((uint64_t)merge_right_table[(board >> 16) & MASK] << 16) |
+           (uint64_t)merge_right_table[ board        & MASK];
 }
 
 static inline uint64_t merge_up(uint64_t board) {
