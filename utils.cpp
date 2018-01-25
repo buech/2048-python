@@ -30,7 +30,7 @@ static uint64_t transpose(uint64_t x) {
    return x;
 }
 
-static inline uint16_t reverse_row(uint16_t row) {
+static uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
 }
 
