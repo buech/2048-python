@@ -4,7 +4,7 @@ NGAMES=8
 NTHREADS=2
 NLOOPS=$(expr $NGAMES / $NTHREADS)
 
-if grep -P > /dev/null 2>&1; then
+if grep -P --help > /dev/null 2>&1; then
 	GREP='grep -P'
 else
 	GREP='pcregrep'
