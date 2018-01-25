@@ -75,7 +75,11 @@ static double evaluate_row(uint16_t x) {
       }
    }
 
-   return -SUM_WEIGHT * sum + MERGES_WEIGHT * merges - MONO_WEIGHT * std::min(left, right) + EMPTY_WEIGHT * empty + LOST_PENALTY;
+   return LOST_PENALTY
+        - MONO_WEIGHT * std::min(left, right)
+        + MERGES_WEIGHT * merges
+        + EMPTY_WEIGHT * empty
+        - SUM_WEIGHT * sum;
 }
 
 static inline double _evaluate(uint64_t board) {
