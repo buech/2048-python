@@ -231,3 +231,17 @@ int get_next_move(uint64_t board, int depth) {
    return best_move;
 }
 
+int main() {
+
+   std::cout << "Initializing tables..." << std::endl;
+   init();
+   std::cout << "Done!" << std::endl;
+
+   uint64_t board = 0x0011010222332340ull;
+
+   int best_move = get_next_move(board, 10);
+
+   std::cout << best_move << std::endl;
+   return 0;
+}
+
