@@ -13,19 +13,19 @@ static uint16_t merge_left_table[0xffff];
 static uint16_t merge_right_table[0xffff];
 static double score_table[0xffff];
 
-struct map_entry_t{
+struct cache_entry_t{
     int depth;
     double score;
 };
 
-typedef std::unordered_map<uint64_t, map_entry_t> map_t;
+typedef std::unordered_map<uint64_t, cache_entry_t> cache_t;
 
 static uint64_t transpose(uint64_t x) {
-   uint64_t t;
-   t = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ull;
-   x ^= t ^ (t << 12);
+   uint64_t tmp;
+   tmp = (x ^ (x >> 12)) & 0x0000f0f00000f0f0ull;
+   x ^= tmp ^ (tmp << 12);
    t = (x ^ (x >> 24)) & 0x00000000ff00ff00ull;
-   x ^= t ^ (t << 24);
+   x ^= tmp ^ (tmp << 24);
 
    return x;
 }
@@ -173,9 +173,9 @@ static int count_free_tiles(const uint64_t &x) {
    return empty;
 }
 
-static double search_min(uint64_t board, int depth, int curdepth, double p, map_t &table);
+static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &table);
 
-static double search_max(uint64_t board, int depth, int curdepth, double p, map_t &table) {
+static double search_max(uint64_t board, int depth, int curdepth, double p, cache_t &table) {
    double max_score = -INF;
 
    for(int move = 4; move > 0; --move) {
@@ -188,12 +188,12 @@ static double search_max(uint64_t board, int depth, int curdepth, double p, map_
    return max_score;
 }
 
-static double search_min(uint64_t board, int depth, int curdepth, double p, map_t &table) {
+static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &table) {
    if(depth == 0 || p < P_CUTOFF) return evaluate(board);
 
-   const map_t::iterator &i = table.find(board);
+   const cache_t::iterator &i = table.find(board);
    if(i != table.end()) {
-      map_entry_t entry = i->second;
+      cache_entry_t entry = i->second;
       if(entry.depth >= curdepth) return entry.score;
    }
 
@@ -215,14 +215,14 @@ static double search_min(uint64_t board, int depth, int curdepth, double p, map_
 
    score *= oofree;
 
-   map_entry_t entry = {curdepth, score};
+   cache_entry_t entry = {curdepth, score};
    table[board] = entry;
 
    return score;
 }
 
 int get_next_move(uint64_t board, int depth) {
-   map_t table;
+   cache_t table;
 
    double max_score = -INF;
    int best_move = 0;
