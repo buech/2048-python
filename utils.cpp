@@ -34,6 +34,16 @@ static uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
 }
 
+static int count_free_tiles(uint64_t x) {
+   int occupied = 0;
+   while(x) {
+      if(x & 0xf) occupied++;
+      x >>= 4;
+   }
+
+   return 16 - occupied;
+}
+
 static const double LOST_PENALTY = 200000.0;
 static const double EMPTY_WEIGHT = 270.0;
 static const double MONO_WEIGHT = 47.0;
@@ -166,15 +176,6 @@ static uint64_t direction(uint64_t board, int move) {
       case 4: return merge_left(board);
       default: return board;
    }
-}
-
-static int count_free_tiles(const uint64_t &x) {
-   int empty = 0;
-   for(int i = 0; i < 64; i += 4) {
-      empty += (((x >> i) & 0xf) == 0);
-   }
-
-   return empty;
 }
 
 static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &table);
