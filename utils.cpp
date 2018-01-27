@@ -178,26 +178,26 @@ static uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &table);
+static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &cache);
 
-static double search_max(uint64_t board, int depth, int curdepth, double p, cache_t &table) {
+static double search_max(uint64_t board, int depth, int curdepth, double p, cache_t &cache) {
    double max_score = -INF;
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      double score = search_min(new_board, depth-1, curdepth+1, p, table);
+      double score = search_min(new_board, depth-1, curdepth+1, p, cache);
       if(score > max_score) max_score = score;
    }
 
    return max_score;
 }
 
-static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &table) {
+static double search_min(uint64_t board, int depth, int curdepth, double p, cache_t &cache) {
    if(depth == 0 || p < P_CUTOFF) return evaluate(board);
 
-   const cache_t::iterator &i = table.find(board);
-   if(i != table.end()) {
+   const cache_t::iterator &i = cache.find(board);
+   if(i != cache.end()) {
       cache_entry_t entry = i->second;
       if(entry.depth >= curdepth) return entry.score;
    }
@@ -211,8 +211,8 @@ static double search_min(uint64_t board, int depth, int curdepth, double p, cach
    double score = 0;
    while(num) {
       if((tmp & 0xf) == 0) {
-         score += 0.9 * search_max(board | num, depth, curdepth, 0.9 * p, table);
-         score += 0.1 * search_max(board | (num << 1), depth, curdepth, 0.1 * p, table);
+         score += 0.9 * search_max(board | num, depth, curdepth, 0.9 * p, cache);
+         score += 0.1 * search_max(board | (num << 1), depth, curdepth, 0.1 * p, cache);
       }
       tmp >>= 4;
       num <<= 4;
@@ -221,13 +221,13 @@ static double search_min(uint64_t board, int depth, int curdepth, double p, cach
    score *= oofree;
 
    cache_entry_t entry = {curdepth, score};
-   table[board] = entry;
+   cache[board] = entry;
 
    return score;
 }
 
 int get_next_move(uint64_t board, int depth) {
-   cache_t table;
+   cache_t cache;
 
    double max_score = -INF;
    int best_move = 0;
@@ -235,7 +235,7 @@ int get_next_move(uint64_t board, int depth) {
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      double score = search_min(new_board, depth, 1, 1.0, table);
+      double score = search_min(new_board, depth, 1, 1.0, cache);
       if(score > max_score) {
          max_score = score;
          best_move = move;
