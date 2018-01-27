@@ -155,7 +155,7 @@ module eval
    real, parameter :: empty_weight = 270.0
    real, parameter :: mono_weight = 47.0
    real, parameter :: mono_pow = 4.0
-   real, parameter :: merges_weight = 2000.0
+   real, parameter :: merges_weight = 1400.0
    real, parameter :: sum_weight = 11.0
    real, parameter :: sum_pow = 3.5
 
@@ -264,7 +264,7 @@ module expecti
    real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
-   real, parameter :: p_cutoff = 0.005
+   real, parameter :: p_cutoff = 0.0025
 
    contains
 
