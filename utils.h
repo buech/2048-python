@@ -4,7 +4,7 @@ extern "C" {
 
 void init();
 
-int get_next_move(uint64_t board, int depth);
+int get_next_move(uint64_t board, int max_depth);
 
 #ifdef  __cplusplus
 }
