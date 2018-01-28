@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -march=native -O3 -fPIC
+CXXFLAGS += -std=c++11 -march=native -O3 -fPIC
 FC = gfortran
 F2PYFLAGS = --arch=-march=native --opt=-Ofast
 MODNAME = utils_fortran
