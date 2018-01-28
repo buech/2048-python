@@ -11,7 +11,7 @@ c: utils.so
 $(MODNAME).so: $(MODNAME).f90
 	f2py -c $(F2PYFLAGS) -m $(MODNAME) $<
 
-utils.so: utils.cpp
+utils.so: utils.cpp utils.h
 	$(CXX) $(CXXFLAGS) -shared -o $@ $<
 
 test.x: $(MODNAME).f90
