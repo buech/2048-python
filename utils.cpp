@@ -80,7 +80,7 @@ static double evaluate_row(uint16_t x) {
       }
       if(row[i] != 0) {
          int k = i+1;
-         while(row[k] == 0 && k < 4) k++;
+         while(row[k] == 0 && k < 3) k++;
          if(row[k] == row[i]) merges++;
       }
    }
@@ -119,10 +119,8 @@ void init() {
                           x        & mask};
 
       for(unsigned i = 0; i < 3; ++i) {
-         unsigned j;
-         for(j = i+1; j < 4; ++j) {
-            if(row[j] != 0) break;
-         }
+         unsigned j = i+1;
+         while(row[j] == 0 && j < 4) j++;
          if(j == 4) break;
 
          if(row[i] == 0) {
