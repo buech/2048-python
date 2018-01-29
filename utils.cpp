@@ -50,7 +50,7 @@ static const double MONO_POW      = 4;
 static const double MERGES_WEIGHT = 2000;
 static const double SUM_WEIGHT    = 10;
 static const double SUM_POW       = 4;
-static const double P_CUTOFF      = 0.0025;
+static const double P_CUTOFF      = 0.001;
 
 static double evaluate_row(uint16_t x) {
    uint16_t mask = 0xf;
