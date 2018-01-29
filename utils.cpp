@@ -9,9 +9,9 @@
 #define INF 1.0e8
 
 static const uint64_t MASK = 0xffff;
-static uint16_t merge_left_table[0xffff];
-static uint16_t merge_right_table[0xffff];
-static double score_table[0xffff];
+static uint16_t merge_left_table[65536];
+static uint16_t merge_right_table[65536];
+static double score_table[65536];
 
 struct cache_entry_t{
     int depth;
@@ -111,15 +111,15 @@ static inline double evaluate(uint64_t board) {
 }
 
 void init() {
-   for(uint16_t x = 0; x < 0xffff; ++x) {
+   for(unsigned x = 0; x < 65536; ++x) {
       uint16_t mask = 0xf;
-      int row[4] = {(x >> 12) & mask,
-                    (x >>  8) & mask,
-                    (x >>  4) & mask,
-                     x        & mask};
+      unsigned row[4] = {(x >> 12) & mask,
+                         (x >>  8) & mask,
+                         (x >>  4) & mask,
+                          x        & mask};
 
-      for(int i = 0; i < 3; ++i) {
-         int j;
+      for(unsigned i = 0; i < 3; ++i) {
+         unsigned j;
          for(j = i+1; j < 4; ++j) {
             if(row[j] != 0) break;
          }
