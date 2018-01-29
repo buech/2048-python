@@ -1,23 +1,11 @@
 CXXFLAGS += -std=c++11 -march=native -O3 -fPIC
-FC = gfortran
-F2PYFLAGS = --arch=-march=native --opt=-Ofast
-MODNAME = utils_fortran
 
-all: fort c
-
-fort: $(MODNAME).so
-c: utils.so
-
-$(MODNAME).so: $(MODNAME).f90
-	f2py -c $(F2PYFLAGS) -m $(MODNAME) $<
+all: utils.so
 
 utils.so: utils.cpp utils.h
 	$(CXX) $(CXXFLAGS) -shared -o $@ $<
 
-test.x: $(MODNAME).f90
-	$(FC) -o $@ $<
-
 clean:
-	rm -f $(MODNAME).so *.mod test.x utils.so
+	rm -f utils.so
 
-.PHONY: clean
+.PHONY: all clean
