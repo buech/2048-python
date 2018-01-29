@@ -44,14 +44,13 @@ static int count_free_tiles(uint64_t x) {
    return 16 - occupied;
 }
 
-static const double LOST_PENALTY = 200000.0;
-static const double EMPTY_WEIGHT = 270.0;
-static const double MONO_WEIGHT = 47.0;
-static const double MONO_POW = 4.0;
-static const double MERGES_WEIGHT = 1400.0;
-static const double SUM_WEIGHT = 11.0;
-static const double SUM_POW = 3.5;
-static const double P_CUTOFF = 0.0025;
+static const double EMPTY_WEIGHT  = 300;
+static const double MONO_WEIGHT   = 50;
+static const double MONO_POW      = 4;
+static const double MERGES_WEIGHT = 2000;
+static const double SUM_WEIGHT    = 10;
+static const double SUM_POW       = 4;
+static const double P_CUTOFF      = 0.0025;
 
 static double evaluate_row(uint16_t x) {
    uint16_t mask = 0xf;
@@ -85,11 +84,10 @@ static double evaluate_row(uint16_t x) {
       }
    }
 
-   return LOST_PENALTY
-        - MONO_WEIGHT * std::min(left, right)
-        + MERGES_WEIGHT * merges
+   return MERGES_WEIGHT * merges
         + EMPTY_WEIGHT * empty
-        - SUM_WEIGHT * sum;
+        - SUM_WEIGHT * sum
+        - MONO_WEIGHT * std::min(left, right);
 }
 
 static inline double _evaluate(uint64_t board) {
