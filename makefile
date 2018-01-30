@@ -6,18 +6,18 @@ MODNAME = utils_fortran
 all: fort c
 
 fort: $(MODNAME).so
-c: utils.so
+c: utils_cpp.so
 
 $(MODNAME).so: $(MODNAME).f90
 	f2py -c $(F2PYFLAGS) -m $(MODNAME) $<
 
-utils.so: utils.cpp utils.h
+utils_cpp.so: utils.cpp utils.h
 	$(CXX) $(CXXFLAGS) -shared -o $@ $<
 
 test.x: $(MODNAME).f90
 	$(FC) -o $@ $<
 
 clean:
-	rm -f $(MODNAME).so *.mod test.x utils.so
+	rm -f $(MODNAME).so *.mod test.x utils_cpp.so
 
 .PHONY: clean

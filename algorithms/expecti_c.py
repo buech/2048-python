@@ -4,7 +4,7 @@ import bitutils
 from math import log
 import os
 
-lib = ctypes.CDLL(os.getcwd() + '/utils.so')
+lib = ctypes.CDLL(os.getcwd() + '/utils_cpp.so')
 
 lib.init()
 
