@@ -80,7 +80,7 @@ static double evaluate_row(uint16_t x) {
       }
       if(row[i] != 0) {
          int k = i+1;
-         while(row[k] == 0 && k < 4) k++;
+         while(row[k] == 0 && k < 3) k++;
          if(row[k] == row[i]) merges++;
       }
    }
