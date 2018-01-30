@@ -202,13 +202,15 @@ static double search_min(uint64_t board, int max_depth, int depth, double p, cac
    if(free == 0) return evaluate(board);
    double oofree = 1.0 / free;
    p *= oofree;
+   double p2 = 0.9 * p;
+   double p4 = 0.1 * p;
    uint64_t num = 0x1000000000000000;
    uint64_t mask = 0xf000000000000000;
    double score = 0;
    while(mask) {
       if((board & mask) == 0) {
-         score += 0.9 * search_max(board | num, max_depth, depth, 0.9 * p, cache);
-         score += 0.1 * search_max(board | (num << 1), max_depth, depth, 0.1 * p, cache);
+         score += 0.9 * search_max(board | num, max_depth, depth, p2, cache);
+         score += 0.1 * search_max(board | (num << 1), max_depth, depth, p4, cache);
       }
       mask >>= 4;
       num >>= 4;
