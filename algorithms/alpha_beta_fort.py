@@ -2,16 +2,7 @@ import utils_fortran
 import numpy as np
 import random
 
-"""
-The minimax algorithm.
-"""
-
 def getNextMoves(matrix):
-    """ alrogithm to determine which moves to do next.
-
-    return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
-    """
-
     max_depth = 2
 
     mat_np = np.array(matrix)

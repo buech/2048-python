@@ -3,10 +3,6 @@ import random
 import time
 from evaluate import evaluate
 
-"""
-The minimax algorithm.
-"""
-
 directions = [1,2,3,4]
 INF = 1e8
 
@@ -43,16 +39,10 @@ def search_min(grid, depth):
     return minScore
 
 def getNextMoves(matrix):
-    """ alrogithm to determine which moves to do next.
-
-    return either a list of allowed moves (i.e. either 1,2,3 or 4, or as string "left", "right, "up", "down") or only the next move
-    """
-
     maxDepth = 1
     maxScore = -INF
     best_move = random.choice(directions)
 
-    #start = time.time()
     for move in directions:
         grid, moved = utils.direction(tuple(map(tuple,matrix)), move)
         if not moved:
@@ -63,9 +53,5 @@ def getNextMoves(matrix):
         if score > maxScore:
             maxScore = score
             best_move = move
-
-    #print score, best_move
-    #stop = time.time()
-    #print("minimax time: ", "%.4fs"%(stop-start))
 
     return best_move
