@@ -35,7 +35,7 @@ def search_min(grid, depth):
             new_grid = utils.add_tile(grid, i, j, num)
             score += p * search_max(new_grid, depth)
 
-    return float(score)/n_free
+    return score / n_free
 
 def getNextMoves(matrix):
     maxDepth = 1
