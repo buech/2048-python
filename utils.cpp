@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cmath>
 #include <limits>
-#include <unordered_map>
+#include <sparsehash/dense_hash_map>
 
 #include "utils.h"
 
@@ -16,7 +16,7 @@ struct cache_entry_t{
     float score;
 };
 
-typedef std::unordered_map<uint64_t, cache_entry_t> cache_t;
+typedef google::dense_hash_map<uint64_t, cache_entry_t> cache_t;
 
 static inline uint64_t transpose(uint64_t x) {
    uint64_t tmp;
@@ -218,6 +218,7 @@ static float search_min(uint64_t board, int max_depth, int depth, float p, cache
 
 int get_next_move(uint64_t board, int max_depth) {
    cache_t cache;
+   cache.set_empty_key(0);
 
    float max_score = std::numeric_limits<float>::min();
    int best_move = 0;
