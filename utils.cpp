@@ -2,11 +2,10 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 #include <unordered_map>
 
 #include "utils.h"
-
-#define INF 1.0e8
 
 static const uint64_t MASK = 0xffff;
 static uint16_t merge_left_table[65536];
@@ -181,7 +180,7 @@ static uint64_t direction(uint64_t board, int move) {
 static double search_min(uint64_t board, int max_depth, int depth, double p, cache_t &cache);
 
 static double search_max(uint64_t board, int max_depth, int depth, double p, cache_t &cache) {
-   double max_score = -INF;
+   double max_score = std::numeric_limits<double>::min();
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
@@ -229,7 +228,7 @@ static double search_min(uint64_t board, int max_depth, int depth, double p, cac
 int get_next_move(uint64_t board, int max_depth) {
    cache_t cache;
 
-   double max_score = -INF;
+   double max_score = std::numeric_limits<double>::min();
    int best_move = 0;
 
    for(int move = 4; move > 0; --move) {
