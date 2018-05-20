@@ -1,8 +1,9 @@
 module utils
+   implicit none
+
    contains
 
       subroutine shift_left(grid)
-         implicit none
          integer, dimension(4,4) :: grid
 
          integer :: k,i,j
@@ -24,7 +25,6 @@ module utils
       end subroutine
 
       subroutine merge_left(grid)
-         implicit none
          integer, dimension(4,4) :: grid
 
          integer :: i, j, k
@@ -49,7 +49,6 @@ module utils
       end subroutine
 
       subroutine reverse_rows(grid)
-         implicit none
          integer, dimension(4,4) :: grid
          integer :: i, j, tmp
 
@@ -64,7 +63,6 @@ module utils
       end subroutine
 
       subroutine reverse_cols(grid)
-         implicit none
          integer, dimension(4,4) :: grid
          integer :: i, j, tmp
 
@@ -79,7 +77,6 @@ module utils
       end subroutine
 
       subroutine sub_transpose(grid)
-         implicit none
          integer, dimension(4,4) :: grid
          integer :: i, j, tmp
 
@@ -94,7 +91,6 @@ module utils
       end subroutine
 
       subroutine merge_right(grid)
-         implicit none
          integer, dimension(4,4) :: grid
 
          call reverse_rows(grid)
@@ -104,7 +100,6 @@ module utils
       end subroutine
 
       subroutine merge_up(grid)
-         implicit none
          integer, dimension(4,4) :: grid
 
          call sub_transpose(grid)
@@ -114,7 +109,6 @@ module utils
       end subroutine
 
       subroutine merge_down(grid)
-         implicit none
          integer, dimension(4,4) :: grid
 
          call reverse_cols(grid)
@@ -124,7 +118,6 @@ module utils
       end subroutine
 
       function direction(grid, move) result(merged)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: move
          integer, dimension(4,4) :: merged
@@ -150,6 +143,7 @@ module utils
 end module utils
 
 module eval
+   implicit none
 
    real, parameter :: lost_penalty = 200000.0
    real, parameter :: empty_weight = 270.0
@@ -162,7 +156,6 @@ module eval
    contains
 
       function count_free_tiles(grid) result(n)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer :: i, j, n
 
@@ -178,7 +171,6 @@ module eval
       end function
 
       function sum_grid(grid) result(s)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer :: i, j
          real :: s
@@ -193,7 +185,6 @@ module eval
       end function
 
       function merges(row) result(m)
-         implicit none
          integer, dimension(4), intent(in) :: row
          integer :: m, i, k
 
@@ -213,7 +204,6 @@ module eval
       end function
 
       function monotonicity(row) result(score)
-         implicit none
          integer, dimension(4), intent(in) :: row
          real :: score, left, right
          integer :: i
@@ -233,7 +223,6 @@ module eval
       end function
 
       function evaluate(grid) result(score)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          real :: score
          integer, dimension(4) :: row, col
@@ -261,6 +250,8 @@ module expecti
    use utils
    use eval
 
+   implicit none
+
    real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
@@ -269,7 +260,6 @@ module expecti
    contains
 
       function search_max(grid, depth, prob) result(max_score)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: depth
          real, intent(in) :: prob
@@ -293,7 +283,6 @@ module expecti
       end function search_max
 
       function search_min(grid, depth, prob) result(score)
-         implicit none
          integer, dimension(4,4) :: grid
          integer, intent(in) :: depth
          real, intent(in) :: prob
@@ -329,7 +318,6 @@ module expecti
       end function
 
       function get_next_move(grid, max_depth) result(best_move)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: max_depth
          integer, dimension(4,4) :: new_grid
@@ -358,13 +346,14 @@ module alpha_beta
    use utils
    use eval
 
+   implicit none
+
    real, parameter :: inf = 1.0e08
    integer, dimension(2) :: num = (/1, 2/)
 
    contains
 
       function search_max(grid, depth, alpha, beta) result(max_score)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: depth
          real, intent(in) :: alpha, beta
@@ -391,7 +380,6 @@ module alpha_beta
       end function
 
       function search_min(grid, depth, alpha, beta) result(min_score)
-         implicit none
          integer, dimension(4,4) :: grid
          integer, intent(in) :: depth
          real, intent(in) :: alpha, beta
@@ -431,7 +419,6 @@ module alpha_beta
       end function
 
       function get_next_move(grid, max_depth) result(best_move)
-         implicit none
          integer, dimension(4,4), intent(in) :: grid
          integer, intent(in) :: max_depth
          integer, dimension(4,4) :: new_grid
