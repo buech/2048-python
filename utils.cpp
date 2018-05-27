@@ -195,7 +195,7 @@ static double search_max(uint64_t board, int max_depth, int depth, double p, cac
 static double search_min(uint64_t board, int max_depth, int depth, double p, cache_t &cache) {
    if(max_depth == 0 || p < P_CUTOFF) return evaluate(board);
 
-   const cache_t::iterator &i = cache.find(board);
+   const cache_t::iterator i = cache.find(board);
    if(i != cache.end()) {
       cache_entry_t entry = i->second;
       if(entry.depth >= depth) return entry.score;
