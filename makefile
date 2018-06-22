@@ -1,4 +1,5 @@
-CXXFLAGS += -std=c++11 -march=native -O3 -fPIC
+CXXFLAGS ?= -march=native -O3
+CXXFLAGS += -std=c++11 -fPIC
 FC = gfortran
 F2PY = f2py2.7
 F2PYFLAGS = --arch=-march=native --opt=-Ofast
