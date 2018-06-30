@@ -2,7 +2,7 @@ CXXFLAGS ?= -march=native -O3
 CXXFLAGS += -std=c++11 -fPIC
 FC = gfortran
 F2PY = f2py2.7
-F2PYFLAGS = --arch=-march=native --opt=-Ofast
+F2PYFLAGS = --quiet --arch=-march=native --opt=-Ofast
 MODNAME = utils_fortran
 
 all: fort c
