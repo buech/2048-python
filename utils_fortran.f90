@@ -252,7 +252,7 @@ module expecti
 
    implicit none
 
-   real, parameter :: inf = 1.0e08
+   real, parameter :: inf = huge(1.0)
    integer, dimension(2) :: num = (/1, 2/)
    real, dimension(2) :: p = (/0.9, 0.1/)
    real, parameter :: p_cutoff = 0.0025
@@ -348,7 +348,7 @@ module alpha_beta
 
    implicit none
 
-   real, parameter :: inf = 1.0e08
+   real, parameter :: inf = huge(1.0)
    integer, dimension(2) :: num = (/1, 2/)
 
    contains
