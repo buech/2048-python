@@ -59,7 +59,7 @@ static double evaluate_row(uint16_t x) {
                  (x >>  4) & mask,
                   x        & mask};
 
-   double mono = 0, sum = 0;
+   double sum = 0;
    int merges = 0, empty = 0;
 
    for(int i = 0; i < 4; ++i) {
