@@ -91,12 +91,14 @@ static double evaluate_row(uint16_t x) {
         - SUM_WEIGHT * sum;
 }
 
+/*
 static inline double _evaluate(uint64_t board) {
    return evaluate_row((board >> 48) & MASK)
         + evaluate_row((board >> 32) & MASK)
         + evaluate_row((board >> 16) & MASK)
         + evaluate_row( board        & MASK);
 }
+*/
 
 static inline double _evaluate_table(uint64_t board) {
    return score_table[(board >> 48) & MASK]
