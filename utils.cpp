@@ -64,7 +64,7 @@ static double evaluate_row(uint16_t x) {
 
    for(int i = 0; i < 4; ++i) {
       if(row[i] != 0) {
-         sum += pow(row[i], SUM_POW);
+         sum += std::pow(row[i], SUM_POW);
       }
       else empty++;
    }
@@ -72,10 +72,10 @@ static double evaluate_row(uint16_t x) {
    double left = 0, right = 0;
    for(int i = 0; i < 3; ++i) {
       if(row[i] > row[i+1]) {
-         left += pow(row[i], MONO_POW) - pow(row[i+1], MONO_POW);
+         left += std::pow(row[i], MONO_POW) - std::pow(row[i+1], MONO_POW);
       }
       else {
-         right += pow(row[i+1], MONO_POW) - pow(row[i], MONO_POW);
+         right += std::pow(row[i+1], MONO_POW) - std::pow(row[i], MONO_POW);
       }
       if(row[i] != 0) {
          int k = i+1;
