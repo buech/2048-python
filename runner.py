@@ -12,6 +12,10 @@ import argparse
 import importlib
 import time
 import numpy as np
+try:
+    input = raw_input
+except NameError:
+    pass
 
 import puzzle
 
@@ -117,7 +121,7 @@ def main(argv):
         results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves, "mps": mps, "total_time": total_time}
         #print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
-            raw_input("Press Enter to terminate.")
+            input("Press Enter to terminate.")
 
     printSummary(results)
 
