@@ -23,11 +23,11 @@ def printSummary(results):
     order.sort(key = lambda x: results[x]["Nmoves"], reverse=True)
     order.sort(key = lambda x: results[x]["maxTile"],  reverse=True)
     order.sort(key = lambda x: results[x]["score"],  reverse=True)
-    header = ["Algorithm name", "Score", "max. Tile", "moves", "tot. T", "TPM"]
+    header = ["Algorithm", "Score", "Tile", "Moves", "Elapsed", "Mps"]
     lines = []
     for alg in order:
         res = results[alg]
-        lines.append([alg, res["score"], res["maxTile"], res["Nmoves"], res["total_time"], res["tpm"]])
+        lines.append([alg, res["score"], res["maxTile"], res["Nmoves"], res["total_time"], res["mps"]])
     line_format = ""
     for val, head in zip(lines[0], header):
         line_format += ("{:<" if line_format=="" else "{:>") + str(max(len(str(val)), len(head)) + 2) + "}"
@@ -110,11 +110,11 @@ def main(argv):
                     break
 
         total_stop = time.time()
-        total_time = total_stop - total_start
-        avg_time = time_per_move / Nmoves
+        total_time = round(total_stop - total_start, 3)
+        mps = round(Nmoves / time_per_move, 3)
         score = gamegrid.calc_score()
         maxTile = np.max(gamegrid.matrix)
-        results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves, "tpm": avg_time, "total_time": total_time}
+        results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves, "mps": mps, "total_time": total_time}
         #print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
             raw_input("Press Enter to terminate.")
