@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 isPython2 = sys.version_info[0] == 2
 if isPython2:
@@ -109,7 +110,7 @@ class GameGrid(Frame):
                 if game_state(self.matrix, self.endless_mode) == 'lose':
                     self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)
-                    print "Score: ", score(self.matrix)
+                    print("Score: ", score(self.matrix))
 
     def ai_move (self, direction):
         if type(direction) == str:

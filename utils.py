@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 
 def transpose(grid):
@@ -62,21 +63,21 @@ if __name__=='__main__':
            ,(16,16, 8, 8))
 
     for row in grid:
-        print row
-    print
+        print(*row)
+    print()
 
     for row in merge_left(grid):
-        print row
-    print
+        print(*row)
+    print()
 
     for row in merge_right(grid):
-        print row
-    print
+        print(*row)
+    print()
 
     for row in merge_up(grid):
-        print row
-    print
+        print(*row)
+    print()
 
     for row in merge_down(grid):
-        print row
-    print
+        print(*row)
+    print()

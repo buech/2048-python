@@ -5,6 +5,7 @@ Common run script to apply algorithm to solve 2048 puzzle.
 Algorithms are read from subdirectory algorithms and have to supply a function getNextMoves(matrix), which should return a list of next moves.
 """
 
+from __future__ import division, print_function
 import os, sys
 import logging
 import argparse
