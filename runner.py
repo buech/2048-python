@@ -10,9 +10,7 @@ import os, sys
 import logging
 import argparse
 import importlib
-import pprint
 import time
-import tabulate
 import numpy as np
 
 import puzzle
@@ -30,7 +28,18 @@ def printSummary(results):
     for alg in order:
         res = results[alg]
         lines.append([alg, res["score"], res["maxTile"], res["Nmoves"], res["total_time"], res["tpm"]])
-    print(tabulate.tabulate(lines, header, tablefmt="simple"))
+    line_format = ""
+    for val, head in zip(lines[0], header):
+        line_format += ("{:<" if line_format=="" else "{:>") + str(max(len(str(val)), len(head)) + 2) + "}"
+    print(line_format.format(*header))
+    for line in lines:
+        print(line_format.format(*line))
+
+def print_gamegrid(matrix):
+    print(4 * "+-----" + "+")
+    for row in matrix:
+        print((4 * "|{:5d}" + "|").format(*row))
+        print(4 * "+-----" + "+")
 
 def main(argv):
     parser = argparse.ArgumentParser( description = 'Script that applies a provided algorithm to solve 2048 puzzle.' ,
@@ -93,8 +102,8 @@ def main(argv):
                 if args.gui:
                     gamegrid.update()
                 if args.ascii:
-                    print( "status: (Score = {})".format(gamegrid.calc_score()))
-                    print( tabulate.tabulate(gamegrid.matrix, tablefmt="grid"))
+                    print("status: (Score = {})".format(gamegrid.calc_score()))
+                    print_gamegrid(gamegrid.matrix)
 
                 if gamegrid.game_over():
                     done = True
