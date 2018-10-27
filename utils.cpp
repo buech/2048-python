@@ -12,11 +12,20 @@ static uint16_t merge_right_table[65536];
 static float score_table[65536];
 
 struct cache_entry_t{
-    int depth;
-    float score;
+   uint64_t board;
+   int depth;
+   double score;
 };
 
-typedef std::unordered_map<uint64_t, cache_entry_t> cache_t;
+static const size_t cache_size = 0xffffffffull + 1;
+
+static inline void set_cached(cache_entry_t entry, cache_entry_t *cache) {
+   cache[entry.board % cache_size] = entry;
+}
+
+static inline cache_entry_t get_cached(uint64_t board, cache_entry_t *cache) {
+   return cache[board % cache_size];
+}
 
 static inline uint64_t transpose(uint64_t x) {
    uint64_t tmp;
@@ -169,10 +178,10 @@ static inline uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static float search_min(uint64_t board, int max_depth, int depth, float p, cache_t &cache);
+static double search_min(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache);
 
-static float search_max(uint64_t board, int max_depth, int depth, float p, cache_t &cache) {
-   float max_score = std::numeric_limits<float>::min();
+static double search_max(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache) {
+   double max_score = std::numeric_limits<double>::min();
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
@@ -184,14 +193,12 @@ static float search_max(uint64_t board, int max_depth, int depth, float p, cache
    return max_score;
 }
 
-static float search_min(uint64_t board, int max_depth, int depth, float p, cache_t &cache) {
+static double search_min(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache) {
    if(max_depth == 0 || p < P_CUTOFF) return evaluate(board);
 
-   const cache_t::iterator i = cache.find(board);
-   if(i != cache.end()) {
-      cache_entry_t entry = i->second;
-      if(entry.depth >= depth) return entry.score;
-   }
+   cache_entry_t entry = get_cached(board, cache);
+   if (entry.board == board && entry.depth >= depth)
+      return entry.score;
 
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
@@ -210,14 +217,14 @@ static float search_min(uint64_t board, int max_depth, int depth, float p, cache
 
    score /= free;
 
-   cache_entry_t entry = {depth, score};
-   cache[board] = entry;
+   entry = {board, depth, score};
+   set_cached(entry, cache);
 
    return score;
 }
 
 int get_next_move(uint64_t board, int max_depth) {
-   cache_t cache;
+   cache_entry_t *cache = new cache_entry_t[cache_size];
 
    float max_score = std::numeric_limits<float>::min();
    int best_move = 0;
@@ -231,6 +238,8 @@ int get_next_move(uint64_t board, int max_depth) {
          best_move = move;
       }
    }
+
+   delete[] cache;
 
    return best_move;
 }
