@@ -11,7 +11,6 @@ import logging
 import argparse
 import importlib
 import time
-import numpy as np
 try:
     input = raw_input
 except NameError:
@@ -117,7 +116,7 @@ def main(argv):
         total_time = round(total_stop - total_start, 3)
         mps = round(Nmoves / time_per_move, 3)
         score = gamegrid.calc_score()
-        maxTile = np.max(gamegrid.matrix)
+        maxTile = max(max(r) for r in gamegrid.matrix)
         results[algorithm] = {"score": score, "maxTile": maxTile, "Nmoves": Nmoves, "mps": mps, "total_time": total_time}
         #print("GAME OVER. Final score: {:8.0f} after {:5.0f} moves (algorithm: {}).".format(score, Nmoves, algorithm))
         if args.gui:
