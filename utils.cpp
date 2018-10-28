@@ -19,7 +19,7 @@ struct cache_entry_t{
 
 typedef std::unordered_map<uint64_t, cache_entry_t> cache_t;
 
-static uint64_t transpose(uint64_t x) {
+static inline uint64_t transpose(uint64_t x) {
    uint64_t tmp;
    tmp = (x ^ (x >> 12)) & 0x0000f0f00000f0f0;
    x ^= tmp ^ (tmp << 12);
@@ -33,7 +33,7 @@ static inline uint16_t reverse_row(uint16_t row) {
    return (row << 12) | ((row << 4) & 0x0f00) | ((row >> 4) & 0x00f0) | (row >> 12);
 }
 
-static int count_free_tiles(uint64_t x) {
+static inline int count_free_tiles(uint64_t x) {
    int occupied = 0;
    while(x) {
       if(x & 0xf) occupied++;
@@ -160,7 +160,7 @@ static inline uint64_t merge_down(uint64_t board) {
    return transpose(merge_right(transpose(board)));
 }
 
-static uint64_t direction(uint64_t board, int move) {
+static inline uint64_t direction(uint64_t board, int move) {
    switch(move) {
       case 4: return merge_left(board);
       case 3: return merge_right(board);
