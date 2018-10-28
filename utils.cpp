@@ -109,8 +109,8 @@ void init() {
                          (x >>  4) & mask,
                           x        & mask};
 
-      for(unsigned i = 0; i < 3; ++i) {
-         unsigned j;
+      for(int i = 0; i < 3; ++i) {
+         int j;
          for(j = i+1; j < 4; ++j) {
             if(row[j] != 0) break;
          }
