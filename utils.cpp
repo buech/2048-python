@@ -10,11 +10,11 @@
 static const uint64_t MASK = 0xffff;
 static uint16_t merge_left_table[65536];
 static uint16_t merge_right_table[65536];
-static double score_table[65536];
+static float score_table[65536];
 
 struct cache_entry_t{
     int depth;
-    double score;
+    float score;
 };
 
 typedef std::unordered_map<uint64_t, cache_entry_t> cache_t;
@@ -43,23 +43,23 @@ static int count_free_tiles(uint64_t x) {
    return 16 - occupied;
 }
 
-static const double LOST_PENALTY = 200000.0;
-static const double EMPTY_WEIGHT = 270.0;
-static const double MONO_WEIGHT = 47.0;
-static const double MONO_POW = 4.0;
-static const double MERGES_WEIGHT = 1400.0;
-static const double SUM_WEIGHT = 11.0;
-static const double SUM_POW = 3.5;
-static const double P_CUTOFF = 0.0025;
+static const float LOST_PENALTY = 200000.0f;
+static const float EMPTY_WEIGHT = 270.0f;
+static const float MONO_WEIGHT = 47.0f;
+static const float MONO_POW = 4.0f;
+static const float MERGES_WEIGHT = 1400.0f;
+static const float SUM_WEIGHT = 11.0f;
+static const float SUM_POW = 3.5f;
+static const float P_CUTOFF = 0.0025f;
 
-static double evaluate_row(uint16_t x) {
+static float evaluate_row(uint16_t x) {
    uint16_t mask = 0xf;
    int row[4] = {(x >> 12) & mask,
                  (x >>  8) & mask,
                  (x >>  4) & mask,
                   x        & mask};
 
-   double sum = 0;
+   float sum = 0;
    int merges = 0, empty = 0;
 
    for(int i = 0; i < 4; ++i) {
@@ -69,7 +69,7 @@ static double evaluate_row(uint16_t x) {
       else empty++;
    }
 
-   double left = 0, right = 0;
+   float left = 0, right = 0;
    for(int i = 0; i < 3; ++i) {
       if(row[i] > row[i+1]) {
          left += std::pow(row[i], MONO_POW) - std::pow(row[i+1], MONO_POW);
@@ -91,23 +91,14 @@ static double evaluate_row(uint16_t x) {
         - SUM_WEIGHT * sum;
 }
 
-/*
-static inline double _evaluate(uint64_t board) {
-   return evaluate_row((board >> 48) & MASK)
-        + evaluate_row((board >> 32) & MASK)
-        + evaluate_row((board >> 16) & MASK)
-        + evaluate_row( board        & MASK);
-}
-*/
-
-static inline double _evaluate_table(uint64_t board) {
+static inline float _evaluate_table(uint64_t board) {
    return score_table[(board >> 48) & MASK]
         + score_table[(board >> 32) & MASK]
         + score_table[(board >> 16) & MASK]
         + score_table[ board        & MASK];
 }
 
-static inline double evaluate(uint64_t board) {
+static inline float evaluate(uint64_t board) {
    return _evaluate_table(board) + _evaluate_table(transpose(board));
 }
 
@@ -179,22 +170,22 @@ static uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static double search_min(uint64_t board, int max_depth, int depth, double p, cache_t &cache);
+static float search_min(uint64_t board, int max_depth, int depth, float p, cache_t &cache);
 
-static double search_max(uint64_t board, int max_depth, int depth, double p, cache_t &cache) {
-   double max_score = std::numeric_limits<double>::min();
+static float search_max(uint64_t board, int max_depth, int depth, float p, cache_t &cache) {
+   float max_score = std::numeric_limits<float>::min();
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      double score = search_min(new_board, max_depth-1, depth+1, p, cache);
+      float score = search_min(new_board, max_depth-1, depth+1, p, cache);
       if(score > max_score) max_score = score;
    }
 
    return max_score;
 }
 
-static double search_min(uint64_t board, int max_depth, int depth, double p, cache_t &cache) {
+static float search_min(uint64_t board, int max_depth, int depth, float p, cache_t &cache) {
    if(max_depth == 0 || p < P_CUTOFF) return evaluate(board);
 
    const cache_t::iterator i = cache.find(board);
@@ -205,21 +196,20 @@ static double search_min(uint64_t board, int max_depth, int depth, double p, cac
 
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
-   double oofree = 1.0 / free;
-   p *= oofree;
+   p /= free;
    uint64_t num = 0x1000000000000000;
    uint64_t mask = 0xf000000000000000;
-   double score = 0;
+   float score = 0;
    while(mask) {
       if((board & mask) == 0) {
-         score += 0.9 * search_max(board | num, max_depth, depth, 0.9 * p, cache);
-         score += 0.1 * search_max(board | (num << 1), max_depth, depth, 0.1 * p, cache);
+         score += 0.9f * search_max(board | num, max_depth, depth, 0.9f * p, cache);
+         score += 0.1f * search_max(board | (num << 1), max_depth, depth, 0.1f * p, cache);
       }
       mask >>= 4;
       num >>= 4;
    }
 
-   score *= oofree;
+   score /= free;
 
    cache_entry_t entry = {depth, score};
    cache[board] = entry;
@@ -230,13 +220,13 @@ static double search_min(uint64_t board, int max_depth, int depth, double p, cac
 int get_next_move(uint64_t board, int max_depth) {
    cache_t cache;
 
-   double max_score = std::numeric_limits<double>::min();
+   float max_score = std::numeric_limits<float>::min();
    int best_move = 0;
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
       if(new_board == board) continue;
-      double score = search_min(new_board, max_depth, 1, 1.0, cache);
+      float score = search_min(new_board, max_depth, 1, 1.0f, cache);
       if(score > max_score) {
          max_score = score;
          best_move = move;
