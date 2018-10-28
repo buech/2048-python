@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <cmath>
 #include <limits>
-#include <unordered_map>
 
 #include "utils.h"
 
@@ -11,20 +10,33 @@ static uint16_t merge_left_table[65536];
 static uint16_t merge_right_table[65536];
 static float score_table[65536];
 
-struct cache_entry_t{
+struct cache_entry {
    uint64_t board;
    int depth;
-   double score;
+   float score;
+
+   cache_entry(): board(0), depth(0), score(0) {}
+   cache_entry(uint64_t board, int depth, float score): board(board), depth(depth), score(score) {}
 };
 
-static const size_t cache_size = 0xffffffffull + 1;
+static const size_t cache_size = 100000;
+static const size_t search_size = 10;
 
-static inline void set_cached(cache_entry_t entry, cache_entry_t *cache) {
-   cache[entry.board % cache_size] = entry;
+static inline void set_cached(cache_entry entry, cache_entry *__restrict__ cache) {
+   size_t idx = entry.board % cache_size;
+   uint64_t candidate = cache[idx].board;
+   for (size_t i = 0; i < search_size && candidate != 0; i++)
+      candidate = cache[++idx % cache_size].board;
+   cache[idx % cache_size] = entry;
 }
 
-static inline cache_entry_t get_cached(uint64_t board, cache_entry_t *cache) {
-   return cache[board % cache_size];
+static inline cache_entry get_cached(uint64_t board, cache_entry *__restrict__ cache) {
+   size_t idx = board % cache_size;
+   uint64_t candidate = cache[idx].board;
+   for (size_t i = 0; i < search_size && candidate != board; i++)
+      candidate = cache[++idx % cache_size].board;
+
+   return cache[idx % cache_size];
 }
 
 static inline uint64_t transpose(uint64_t x) {
@@ -178,10 +190,10 @@ static inline uint64_t direction(uint64_t board, int move) {
    }
 }
 
-static double search_min(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache);
+static float search_min(uint64_t board, int max_depth, int depth, float p, cache_entry *__restrict__ cache);
 
-static double search_max(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache) {
-   double max_score = std::numeric_limits<double>::min();
+static float search_max(uint64_t board, int max_depth, int depth, float p, cache_entry *__restrict__ cache) {
+   float max_score = std::numeric_limits<float>::min();
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
@@ -193,12 +205,11 @@ static double search_max(uint64_t board, int max_depth, int depth, double p, cac
    return max_score;
 }
 
-static double search_min(uint64_t board, int max_depth, int depth, double p, cache_entry_t *cache) {
+static float search_min(uint64_t board, int max_depth, int depth, float p, cache_entry *__restrict__ cache) {
    if(max_depth == 0 || p < P_CUTOFF) return evaluate(board);
 
-   cache_entry_t entry = get_cached(board, cache);
-   if (entry.board == board && entry.depth >= depth)
-      return entry.score;
+   cache_entry entry = get_cached(board, cache);
+   if (entry.board == board && entry.depth >= depth) return entry.score;
 
    int free = count_free_tiles(board);
    if(free == 0) return evaluate(board);
@@ -224,10 +235,9 @@ static double search_min(uint64_t board, int max_depth, int depth, double p, cac
 }
 
 int get_next_move(uint64_t board, int max_depth) {
-   cache_entry_t *cache = new cache_entry_t[cache_size];
-
    float max_score = std::numeric_limits<float>::min();
    int best_move = 0;
+   cache_entry *cache = new cache_entry[cache_size];
 
    for(int move = 4; move > 0; --move) {
       uint64_t new_board = direction(board, move);
