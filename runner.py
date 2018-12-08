@@ -107,9 +107,13 @@ def main(argv):
                 if args.ascii:
                     print("status: (Score = {})".format(gamegrid.calc_score()))
                     print_gamegrid(gamegrid.matrix)
+                    print(10 * "\x1b[A", end='')
+                    sys.stdout.flush()
 
                 if gamegrid.game_over():
                     done = True
+                    if args.ascii:
+                        print(10*'\n', end='')
                     break
 
         total_stop = time.time()
