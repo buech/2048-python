@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Common run script to apply algorithm to solve 2048 puzzle.
