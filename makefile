@@ -20,7 +20,6 @@ test.x: $(MODNAME).f90
 	$(FC) -o $@ $<
 
 clean:
-	rm -f $(MODNAME).so *.mod test.x utils_cpp.so
-	rm -rf $(MODNAME).so.dSYM
+	rm -f *.so *.mod test.x
 
 .PHONY: clean
