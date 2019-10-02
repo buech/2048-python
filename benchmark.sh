@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-NGAMES=8
-NTHREADS=2
+NGAMES=${NGAMES:-8}
+NTHREADS=${NTHREADS:-2}
 
 printf "Running $NGAMES games in $NTHREADS threads\n"
 
